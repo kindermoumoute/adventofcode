@@ -69,15 +69,12 @@ func (s *SpreadSheet) CheckSumPart2() int {
 		for j := len(r.Cell) - 1; j > 0; j-- {
 			for k := 0; k < j; k++ {
 				if s.Row[i].Cell[j]%s.Row[i].Cell[k] == 0 {
-					s.Row[i].div = s.Row[i].Cell[j] / s.Row[i].Cell[k]
-					break
+					s.cs2 += s.Row[i].Cell[j] / s.Row[i].Cell[k]
+					goto omgthisisagoto
 				}
 			}
-			if s.Row[i].div != 0 {
-				break
-			}
 		}
-		s.cs2 += s.Row[i].div
+	omgthisisagoto:
 	}
 	return s.cs2
 }
