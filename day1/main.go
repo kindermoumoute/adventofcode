@@ -5,12 +5,12 @@ import "fmt"
 func main() {
 	part1 := 0
 	part2 := 0
-	puzzleLenght := len(puzzle)
+	puzzleLength := len(puzzle)
 	for i, r := range puzzle {
-		if puzzle[i] == puzzle[(i+1)%puzzleLenght] {
+		if puzzle[i] == puzzle[(i+1)%puzzleLength] {
 			part1 += int(r - '0')
 		}
-		if puzzle[i] == puzzle[(puzzleLenght/2+i)%puzzleLenght] {
+		if puzzle[i] == puzzle[(puzzleLenght/2+i)%puzzleLength] {
 			part2 += int(r - '0')
 		}
 	}
