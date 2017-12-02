@@ -14,51 +14,44 @@ func main() {
 
 }
 
-type SpreadSheet struct {
-	Row     []Row
-	cs, cs2 int
-}
+type SpreadSheet [][]int
 
-type Row struct {
-	Cell []int
-	div  int
-}
-
-func (s *SpreadSheet) CheckSumPart1() int {
-	for i := range s.Row {
-		s.cs += s.Row[i].Cell[len(s.Row[i].Cell)-1] - s.Row[i].Cell[0]
+func (s SpreadSheet) CheckSumPart1() int {
+	cs := 0
+	for i := range s {
+		cs += s[i][len(s[i])-1] - s[i][0]
 	}
-	return s.cs
+	return cs
 }
 
-func (s *SpreadSheet) CheckSumPart2() int {
-	for i, r := range s.Row {
-		for j := len(r.Cell) - 1; j > 0; j-- {
+func (s SpreadSheet) CheckSumPart2() int {
+	cs := 0
+	for i, r := range s {
+		for j := len(r) - 1; j > 0; j-- {
 			for k := 0; k < j; k++ {
-				if s.Row[i].Cell[j]%s.Row[i].Cell[k] == 0 {
-					s.cs2 += s.Row[i].Cell[j] / s.Row[i].Cell[k]
+				if s[i][j]%s[i][k] == 0 {
+					cs += s[i][j] / s[i][k]
 					goto omgthisisagoto
 				}
 			}
 		}
 	omgthisisagoto:
 	}
-	return s.cs2
+	return cs
 }
 
-func parse(p string) *SpreadSheet {
-	ss := &SpreadSheet{}
+func parse(p string) SpreadSheet {
 	lines := strings.Split(p, "\n")
-	ss.Row = make([]Row, len(lines))
+	s := make(SpreadSheet, len(lines))
 
 	for i, l := range lines {
 		line := strings.Split(l, "\t")
-		ss.Row[i].Cell = []int{}
+		s[i] = []int{}
 		for _, r := range line {
 			cell, _ := strconv.Atoi(r)
-			ss.Row[i].Cell = append(ss.Row[i].Cell, cell)
+			s[i] = append(s[i], cell)
 		}
-		sort.Ints(ss.Row[i].Cell)
+		sort.Ints(s[i])
 	}
-	return ss
+	return s
 }
