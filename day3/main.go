@@ -24,38 +24,28 @@ func part2(puzzle int) int {
 
 	x := 0
 	y := 0
-	//xSign := 0
-	//ySign := 1
-	side := 1
-	corner := 0
-	for {
-		side++
-		corner = side / 2
-		//value < puzzle
-		for ; y < corner; y++ {
-			if adjacentSum(x, y, values) > puzzle {
-				goto found
-			}
+	xSign := 0
+	ySign := 1
+	corner := 1
+	for adjacentSum(x, y, values) <= puzzle {
+		switch {
+		case y == corner && ySign == 1:
+			ySign = 0
+			xSign = -1
+		case x == -corner && xSign == -1:
+			ySign = -1
+			xSign = 0
+		case y == -corner && ySign == -1:
+			ySign = 0
+			xSign = 1
+		case x == corner && xSign == 1:
+			ySign = 1
+			xSign = 0
+			corner++
 		}
-		for ; x > -corner; x-- {
-			if adjacentSum(x, y, values) > puzzle {
-				goto found
-			}
-		}
-		side++
-		for ; y > -corner; y-- {
-			if adjacentSum(x, y, values) > puzzle {
-				goto found
-			}
-		}
-		for ; x < corner; x++ {
-			if adjacentSum(x, y, values) > puzzle {
-				goto found
-			}
-		}
+		x += xSign
+		y += ySign
 	}
-found:
-
 	return values[p{x, y}]
 }
 
