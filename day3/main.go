@@ -18,15 +18,15 @@ type p struct {
 }
 
 func part2(puzzle int) int {
-	// Part 2
 	values := make(map[p]int)
-	values[p{x: 0, y: 0}] = 1
 
+	values[p{x: 0, y: 0}] = 1
 	x := 0
 	y := 0
 	xSign := 0
 	ySign := 1
 	corner := 1
+
 	for adjacentSum(x, y, values) <= puzzle {
 		switch {
 		case y == corner && ySign == 1:
@@ -64,13 +64,8 @@ func adjacentSum(x, y int, v map[p]int) int {
 	return sum
 }
 
-func sideSize(p int) int {
-	tmpSqrt := math.Sqrt(float64(p))
-	if tmpSqrt != float64(int(tmpSqrt)) {
-		tmpSqrt++
-	}
-	return int(tmpSqrt)
-}
+// Part 1
+// It uses only logic
 
 func part1(puzzle int) int {
 	side := sideSize(puzzle)
@@ -105,4 +100,12 @@ func part1(puzzle int) int {
 	}
 
 	return int(math.Abs(float64(x0-x)) + math.Abs(float64(y0-y)))
+}
+
+func sideSize(p int) int {
+	tmpSqrt := math.Sqrt(float64(p))
+	if tmpSqrt != float64(int(tmpSqrt)) {
+		tmpSqrt++
+	}
+	return int(tmpSqrt)
 }
