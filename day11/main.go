@@ -6,11 +6,7 @@ import (
 	"strings"
 )
 
-type d struct {
-	x, y int
-}
-
-var directionMap = map[string]d{
+var directionMap = map[string]struct{ x, y int }{
 	"s":  {1, 0},
 	"se": {1, -1},
 	"ne": {0, -1},
@@ -20,26 +16,18 @@ var directionMap = map[string]d{
 }
 
 func main() {
-	x, y := 0, 0
-	dMax := 0
+	x, y, d, dMax := 0, 0, 0, 0
 	for _, p := range strings.Split(puzzle, ",") {
 		x += directionMap[p].x
 		y += directionMap[p].y
-		d := dist(x, y)
+		d = dist(float64(x), float64(y))
 		if d > dMax {
 			dMax = d
 		}
 	}
-
-	fmt.Println(dist(x, y), dMax)
+	fmt.Println(d, dMax)
 }
 
-func dist(x, y int) int {
-	d := 0.0
-	if x < 0 && y < 0 || y > 0 && x > 0 {
-		d = math.Abs(float64(x)) + math.Abs(float64(y))
-	} else {
-		d = math.Max(math.Abs(float64(x)), math.Abs(float64(y)))
-	}
-	return int(d)
+func dist(x, y float64) int {
+	return int((math.Abs(x) + math.Abs(y) + math.Abs(x+y)) / 2)
 }
