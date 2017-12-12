@@ -8,76 +8,49 @@ import (
 
 func main() {
 	list := parse(puzzle)
-	groupMap := make(map[int]bool)
-	part1 := 0
+	groupMap := make(map[int]int)
 	for i := range list {
-		min := list[i].minInGroup(make(map[int]bool), 9999999)
-		groupMap[min] = true
-		if part1 == 0 && min == 0 {
-			part1 = list[i].countSiblings(make(map[int]bool))
-		}
+		nb, min := list[i].countSiblings(make(map[int]bool), 9999999)
+		groupMap[min] = nb
 	}
-	fmt.Println(part1, len(groupMap))
+	fmt.Println(groupMap[0], len(groupMap))
 }
 
 type node struct {
 	value int
 	s     []*node
-
-	tmp string
 }
 
-func (n *node) minInGroup(ref map[int]bool, min int) int {
+func (n *node) countSiblings(ref map[int]bool, min int) (int, int) {
 	if n == nil {
-		return min
+		return 0, min
 	}
 	if _, exist := ref[n.value]; exist {
-		return min
+		return 0, min
 	}
 	if n.value < min {
 		min = n.value
 	}
-
-	ref[n.value] = true
-	for _, s := range n.s {
-		min = s.minInGroup(ref, min)
-	}
-	return min
-}
-
-func (n *node) countSiblings(ref map[int]bool) int {
-	if n == nil {
-		return 0
-	}
-	if _, exist := ref[n.value]; exist {
-		return 0
-	}
 	count := 0
-
+	t := 0
 	ref[n.value] = true
 	for _, s := range n.s {
-		count += s.countSiblings(ref)
+		t, min = s.countSiblings(ref, min)
+		count += t
 	}
-	return count + 1
+	return count + 1, min
 }
 
-func (n *node) String() string {
-	s := "value: " + strconv.Itoa(n.value)
-	return s
-}
-func parse(s string) []*node {
+func parse(s string) []node {
 	splittedPuzzle := strings.Split(s, "\n")
-	v := make([]*node, len(splittedPuzzle))
+	v := make([]node, len(splittedPuzzle))
 	for i, elt := range splittedPuzzle {
 		splitLine := strings.Split(elt, " <-> ")
-		v[i] = &node{value: i, s: []*node{}, tmp: splitLine[1]}
-	}
-
-	for i, e := range v {
-		prgmList := strings.Split(e.tmp, ", ")
+		v[i] = node{value: i, s: []*node{}}
+		prgmList := strings.Split(splitLine[1], ", ")
 		for _, prgm := range prgmList {
 			prgmInt, _ := strconv.Atoi(prgm)
-			v[i].s = append(v[i].s, v[prgmInt])
+			v[i].s = append(v[i].s, &v[prgmInt])
 		}
 	}
 	return v
