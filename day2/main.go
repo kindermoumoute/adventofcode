@@ -27,15 +27,15 @@ func (s SpreadSheet) CheckSumPart1() int {
 func (s SpreadSheet) CheckSumPart2() int {
 	cs := 0
 	for i, r := range s {
+	dance:
 		for j := len(r) - 1; j > 0; j-- {
 			for k := 0; k < j; k++ {
 				if s[i][j]%s[i][k] == 0 {
 					cs += s[i][j] / s[i][k]
-					goto omgthisisagoto
+					break dance
 				}
 			}
 		}
-	omgthisisagoto:
 	}
 	return cs
 }
