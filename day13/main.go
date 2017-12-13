@@ -13,8 +13,7 @@ func main() {
 
 	// part 1
 	for _, l := range list {
-		ss := sevScore(picosec, l.depth, l.size)
-		if ss == 0 {
+		if sevScore(picosec, l.depth, l.size) == 0 {
 			part1 += l.depth * l.size
 		}
 	}
@@ -22,8 +21,7 @@ func main() {
 	for ; severity != 0; picosec++ {
 		severity = 0
 		for _, l := range list {
-			ss := sevScore(picosec, l.depth, l.size)
-			if ss == 0 {
+			if sevScore(picosec, l.depth, l.size) == 0 {
 				severity += l.depth*l.size + 1
 				break
 			}
