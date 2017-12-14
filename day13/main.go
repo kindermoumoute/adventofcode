@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	part1, picosec, severity := 0, 0, 1
+	part1, picosec := 0, 0
 
 	list := parse(puzzle)
 
@@ -18,11 +18,11 @@ func main() {
 		}
 	}
 	// part 2
-	for ; severity != 0; picosec++ {
-		severity = 0
+	for severity := true; severity; picosec++ {
+		severity = false
 		for _, l := range list {
 			if sevScore(picosec, l.depth, l.size) == 0 {
-				severity += l.depth*l.size + 1
+				severity = true
 				break
 			}
 		}
