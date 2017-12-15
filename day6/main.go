@@ -11,9 +11,7 @@ func main() {
 	//puzzle := "2	4	1	2"
 	memoryBanks := parse(puzzle)
 	states := make(map[string]int)
-	sum := 0
 	for {
-
 		states[sliceToString(memoryBanks)]++
 		if states[sliceToString(memoryBanks)] > 2 {
 			break
@@ -31,7 +29,6 @@ func main() {
 			topBank = (topBank + 1) % len(memoryBanks)
 			memoryBanks[topBank]++
 			blocksToDistribute--
-			sum++
 		}
 	}
 	part2 := 0
