@@ -5,20 +5,25 @@ import (
 	"strconv"
 )
 
+const input = `jxqlasbh-`
+
+var salt = []int{17, 31, 73, 47, 23}
+
 func main() {
-	salt := []int{17, 31, 73, 47, 23}
-	//puzzle := []int{'f', 'l', 'q', 'r', 'g', 'n', 'k', 'x', '-'}
-	puzzle := []int{'j', 'x', 'q', 'l', 'a', 's', 'b', 'h', '-'}
+	key := []int{}
+	for _, number := range input {
+		key = append(key, int(number))
+	}
 	sum := 0
 	grid := make([][]bool, 128)
 	for i := 0; i < 128; i++ {
-		tmpstr := strconv.Itoa(i)
-		tmpsli := []int{}
-		for _, l := range tmpstr {
-			tmpsli = append(tmpsli, int(l))
+		strNumber := strconv.Itoa(i)
+		tmpsKey := []int{}
+		for _, l := range strNumber {
+			tmpsKey = append(tmpsKey, int(l))
 		}
-		tmp := append(append(puzzle, tmpsli...), salt...)
-		hash := actualKnowHash(tmp)
+		tmp := append(append(key, tmpsKey...), salt...)
+		hash := actualKnotHash(tmp)
 		grid[i] = []bool{}
 
 		for _, j := range hash {
@@ -56,7 +61,7 @@ func explore(grid [][]bool, i, j int) {
 	explore(grid, i, j+1)
 }
 
-func actualKnowHash(s []int) []int {
+func actualKnotHash(s []int) []int {
 	list := newList(256)
 	pos, skipSize := 0, 0
 	for i := 0; i < 64; i++ {
