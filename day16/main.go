@@ -51,10 +51,18 @@ func parse(s string, programs []byte) (string, string) {
 
 func spin(s []byte, n int) []byte {
 	t := make([]byte, len(s))
-	for i := 0; i < 16; i++ {
-		t[(i+n)%16] = s[i]
+	for i := 0; i < len(s); i++ {
+		t[(i+n)%len(s)] = s[i]
 	}
 	return t
+}
+
+type aoc struct {
+	input    string
+	testCase []testCase
+}
+type testCase struct {
+	input, expected string
 }
 
 func exchange(s []byte, a, b int) {
