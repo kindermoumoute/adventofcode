@@ -8,7 +8,28 @@ import (
 
 func main() {
 	tn, bottom := buildTree(puzzle)
-	fmt.Println(tn[bottom])
+	weight := 0
+	for node := tn[bottom]; node != nil && len(node.sub) > 1; {
+		sumRef := make(map[int]int)
+		nameRef := make(map[int]string)
+		refWeight := 0
+		for i, child := range node.sub {
+			sumRef[node.sub[i].weightSum]++
+			if sumRef[node.sub[i].weightSum] > 1 {
+				refWeight = node.sub[i].weightSum
+			}
+			nameRef[node.sub[i].weightSum] = child.name
+		}
+		var n *towerNode
+		for w, c := range sumRef {
+			if c == 1 {
+				n = tn[nameRef[w]]
+				weight = n.weight - n.weightSum + refWeight
+			}
+		}
+		node = n
+	}
+	fmt.Println(bottom, weight)
 }
 
 type towerNode struct {
@@ -57,7 +78,7 @@ func buildTree(s string) (map[string]*towerNode, string) {
 }
 
 func (tn *towerNode) String() string {
-	str := tn.name + ":" + strconv.Itoa(tn.weight) + " ["
+	str := tn.name + ":" + strconv.Itoa(tn.weightSum) + " ["
 	for _, node := range tn.sub {
 		str += node.String()
 	}
