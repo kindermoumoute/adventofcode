@@ -6,10 +6,10 @@ type testCase struct {
 
 var tests = []testCase{
 	testCase{
-		``,
-		``,
-		``,
+		`3`,
+		`638`,
+		`1226`,
 	},
 }
 
-var puzzle = ``
+var puzzle = `349`
