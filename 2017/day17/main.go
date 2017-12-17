@@ -17,9 +17,9 @@ func run(input string) (string, string) {
 	lenBuf := len(buf.buffer)
 	for i := 1; ; i++ {
 		buf.pos = (buf.pos + forwardSteps) % lenBuf
-		//fmt.Println("i=", i, " pos ", buf.pos, " ", forwardSteps, len(buf.buffer), (i+forwardSteps)%len(buf.buffer))
 		if i == 2017 {
 			part1 = buf.buffer[buf.pos]
+		} else if i == 50000000 {
 			break
 		}
 		if part1 == -1 {
@@ -27,7 +27,9 @@ func run(input string) (string, string) {
 			copy(buf.buffer[buf.pos+1:], buf.buffer[buf.pos:])
 			buf.buffer[buf.pos] = i
 		}
-
+		if buf.pos == 0 {
+			part2 = i
+		}
 		buf.pos++
 		lenBuf++
 	}

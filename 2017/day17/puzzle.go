@@ -8,7 +8,7 @@ var tests = []testCase{
 	testCase{
 		`3`,
 		`638`,
-		`1226`,
+		`1222153`,
 	},
 }
 
