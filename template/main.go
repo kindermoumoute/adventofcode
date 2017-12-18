@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// returns part1 and part2
 func run(input string) (string, string) {
 	//list := parse(input)
 	return "", ""
