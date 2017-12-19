@@ -90,7 +90,7 @@ func parse(s string) program {
 	c := program{
 		register:    make(map[string]int),
 		instruction: [][]string{},
-		receiver:    make(chan int, 99999),
+		receiver:    make(chan int, 999),
 		done:        make(chan bool),
 	}
 	for _, line := range strings.Split(s, "\n") {
@@ -113,73 +113,3 @@ func main() {
 	}
 	fmt.Println(run(puzzle))
 }
-
-// part 1 - unoptimized
-//func run(input string) (string, string) {
-//	sound, part1 := "", ""
-//	c := parse(input)
-//	//c.register["c"] = 1 // remove to get part 1
-//dance:
-//	for i := 0; i < len(c.instruction); i++ {
-//		if i < 15 {
-//			fmt.Println(i, " : ", c.instruction[i], " a=", c.register["a"])
-//		}
-//		ins := c.instruction[i]
-//		switch ins[0] {
-//		case "set":
-//			value, err := strconv.Atoi(ins[2])
-//			if err != nil {
-//				value = c.register[ins[2]]
-//			}
-//			c.register[ins[1]] = value
-//			fmt.Println("VALUE ", value, " : ", ins[2])
-//		case "add":
-//			value, err := strconv.Atoi(ins[2])
-//			if err != nil {
-//				value = c.register[ins[2]]
-//			}
-//			c.register[ins[1]] += value
-//		case "mul":
-//			value, err := strconv.Atoi(ins[2])
-//			if err != nil {
-//				value = c.register[ins[2]]
-//			}
-//			c.register[ins[1]] *= value
-//		case "mod":
-//			value, err := strconv.Atoi(ins[2])
-//			if err != nil {
-//				value = c.register[ins[2]]
-//			}
-//			c.register[ins[1]] %= value
-//		case "snd":
-//			value, err := strconv.Atoi(ins[1])
-//			if err != nil {
-//				value = c.register[ins[1]]
-//			}
-//			sound = strconv.Itoa(value)
-//		case "rcv":
-//			value, err := strconv.Atoi(ins[1])
-//			if err != nil {
-//				value = c.register[ins[1]]
-//			}
-//			if value != 0 {
-//				part1 = sound
-//				break dance
-//			}
-//			//break dance
-//		case "jgz":
-//			test, err := strconv.Atoi(ins[1])
-//			if err != nil {
-//				test = c.register[ins[1]]
-//			}
-//			fmt.Println("register ", ins[1], " : ", test)
-//			if test > 0 {
-//				value, err := strconv.Atoi(ins[2])
-//				check(err)
-//				i += value - 1
-//			}
-//		}
-//	}
-//	fmt.Println(part1)
-//	return part1, ""
-//}
