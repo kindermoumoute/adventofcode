@@ -7,8 +7,8 @@ import (
 )
 
 type p struct {
-	x, y  int
-	route byte
+	x, y int
+	path byte
 }
 
 var (
@@ -22,44 +22,66 @@ var (
 
 // returns part1 and part2
 func run(input string) (string, string) {
-	tab := parse(input)
-	word := []byte{}
+	p := parse(input)
+	part1 := []byte{}
 	part2 := 0
-	x, y := 0, 0
-	dirI := 1
-	for i := range tab[0] {
-		if tab[0][i] == '|' {
-			x = i
+	for p.path != ' ' {
+
+		// part 1 & 2
+		if p.isLetter(p.path) {
+			part1 = append(part1, p.path)
 		}
-	}
-	for {
-		if tab[y][x] >= 'A' && tab[y][x] <= 'Z' {
-			word = append(word, tab[y][x])
-		}
-		x += dir[dirI].x
-		y += dir[dirI].y
 		part2++
-		if tab[y][x] == '+' {
-			dirI = (dirI + 2) % len(dir)
-			for {
-				dirI = (dirI + 1) % len(dir)
-				if tab[y+dir[dirI].y][x+dir[dirI].x] == dir[dirI].route {
-					break
-				}
 
-				if tab[y+dir[dirI].y][x+dir[dirI].x] >= 'A' && tab[y+dir[dirI].y][x+dir[dirI].x] <= 'Z' {
-					break
-				}
-			}
-		} else if tab[y][x] == ' ' {
-			break
+		// walk and rotate
+		p.walk()
+		if p.path == '+' {
+			p.findPath()
 		}
-
 	}
-	return string(word), strconv.Itoa(part2)
+	return string(part1), strconv.Itoa(part2)
 }
 
-func parse(s string) [][]byte {
+type walker struct {
+	p
+	dirI int
+	tab  [][]byte
+}
+
+func (p *walker) findPath() {
+	p.rotateLeft()
+	for !p.followsRoute() && !p.isLetter(p.next()) {
+		p.rotateRight()
+	}
+}
+
+func (p *walker) walk() {
+	p.x += dir[p.dirI].x
+	p.y += dir[p.dirI].y
+	p.path = p.tab[p.y][p.x]
+}
+
+func (p *walker) rotateRight() {
+	p.dirI = (p.dirI + 1) % len(dir)
+}
+
+func (p *walker) rotateLeft() {
+	p.dirI = (p.dirI + 3) % len(dir)
+}
+
+func (p *walker) isLetter(b byte) bool {
+	return b >= 'A' && b <= 'Z'
+}
+
+func (p *walker) next() byte {
+	return p.tab[p.y+dir[p.dirI].y][p.x+dir[p.dirI].x]
+}
+
+func (p *walker) followsRoute() bool {
+	return p.next() == dir[p.dirI].path
+}
+
+func parse(s string) *walker {
 	add := []byte{}
 	for i := 0; i < 200; i++ {
 		add = append(add, ' ')
@@ -70,8 +92,15 @@ func parse(s string) [][]byte {
 	for i, line := range lines {
 		list[i] = append([]byte(line), add...)
 	}
-
-	return list
+	p := &walker{tab: list}
+	p.path = '|'
+	p.dirI = 1
+	for i := range p.tab[0] {
+		if p.tab[0][i] == '|' {
+			p.x = i
+		}
+	}
+	return p
 }
 
 func main() {
