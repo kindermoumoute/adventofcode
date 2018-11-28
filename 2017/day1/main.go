@@ -10,7 +10,7 @@ func main() {
 		if puzzle[i] == puzzle[(i+1)%puzzleLength] {
 			part1 += int(r - '0')
 		}
-		if puzzle[i] == puzzle[(puzzleLenght/2+i)%puzzleLength] {
+		if puzzle[i] == puzzle[(puzzleLength/2+i)%puzzleLength] {
 			part2 += int(r - '0')
 		}
 	}

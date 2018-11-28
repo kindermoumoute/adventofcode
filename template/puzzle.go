@@ -5,7 +5,7 @@ type testCase struct {
 }
 
 var tests = []testCase{
-	testCase{
+	{
 		``,
 		``,
 		``,
