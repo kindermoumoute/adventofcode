@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
 // returns part1 and part2
@@ -19,16 +21,10 @@ func parse(s string) []int {
 	list := make([]int, len(lines))
 	for i, line := range lines {
 		nb, err := strconv.Atoi(line)
-		check(err)
+		pkg.Check(err)
 		list[i] = nb
 	}
 	return list
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
 }
 
 func main() {

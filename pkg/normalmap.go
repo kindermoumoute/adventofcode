@@ -1,6 +1,9 @@
 package pkg
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 const (
 	NORTH = iota
@@ -26,6 +29,26 @@ type P struct {
 
 func NewPoint() *P {
 	return &P{}
+}
+
+func (p *P) MoveLeft(steps int) {
+	p.CurrentDirection = WEST
+	p.Move(1)
+}
+
+func (p *P) MoveRight(steps int) {
+	p.CurrentDirection = EAST
+	p.Move(1)
+}
+
+func (p *P) MoveUp(steps int) {
+	p.CurrentDirection = NORTH
+	p.Move(1)
+}
+
+func (p *P) MoveDown(steps int) {
+	p.CurrentDirection = SOUTH
+	p.Move(1)
 }
 
 func (p *P) Move(steps int) {
@@ -55,4 +78,17 @@ func (p *P) EuclideanDistFrom(from *P) float64 {
 
 func (p *P) EuclideanDistFromOrigin() float64 {
 	return math.Sqrt(float64(p.DistFromOrigin()))
+}
+func (p *P) FindInMap(stringMap [][]string, origin P) string {
+	newY := origin.Y - p.Y
+	if newY >= len(stringMap) || newY < 0 {
+		panic(fmt.Errorf("out or range Y:%d", p.Y))
+	}
+
+	newX := origin.X + p.X
+	if newX >= len(stringMap[newY]) || newX < 0 {
+		panic(fmt.Errorf("out or range X:%d", p.X))
+	}
+
+	return stringMap[newY][newX]
 }
