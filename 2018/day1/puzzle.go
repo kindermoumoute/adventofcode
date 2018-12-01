@@ -1,10 +1,8 @@
 package main
 
-type testCase struct {
-	input, expectedPart1, expectedPart2 string
-}
+import "github.com/kindermoumoute/adventofcode/pkg"
 
-var tests = []testCase{
+var tests = pkg.TestCases{
 	{
 		`+1
 -1`,
