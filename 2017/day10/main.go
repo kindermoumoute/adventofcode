@@ -8,7 +8,7 @@ import (
 
 var Salt = []int{17, 31, 73, 47, 23}
 
-func run(input string) (string, string) {
+func Run(input string) (string, string) {
 	part1Input := []int{}
 	for _, number := range strings.Split(input, ",") {
 		n, _ := strconv.Atoi(number)

@@ -1,6 +1,9 @@
 package pkg
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type TestCases []TestCase
 
@@ -18,11 +21,11 @@ func (t TestCases) Run(fn func(string) (string, string), hideInput bool) {
 		}
 		if part1 != test.ExpectedPart1 {
 			fmt.Println(" - PART1: ", part1, " but expected ", test.ExpectedPart1)
-			return
+			os.Exit(1)
 		}
 		if part2 != test.ExpectedPart2 {
 			fmt.Println(" - PART2: ", part2, " but expected ", test.ExpectedPart2)
-			return
+			os.Exit(1)
 		}
 	}
 }
