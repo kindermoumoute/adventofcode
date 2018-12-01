@@ -6,20 +6,20 @@ import (
 )
 
 const (
-	NORTH = iota
-	EAST
-	SOUTH
-	WEST
+	UP = iota
+	LEFT
+	DOWN
+	RIGHT
 )
 
 var DirectionMap = map[int]struct {
 	x, y int
 	name string
 }{
-	NORTH: {0, 1, "north"},
-	EAST:  {1, 0, "east"},
-	SOUTH: {0, -1, "south"},
-	WEST:  {-1, 0, "west"},
+	UP:    {0, 1, "up"},
+	LEFT:  {1, 0, "left"},
+	DOWN:  {0, -1, "down"},
+	RIGHT: {-1, 0, "right"},
 }
 
 type P struct {
@@ -32,23 +32,23 @@ func NewPoint() *P {
 }
 
 func (p *P) MoveLeft(steps int) {
-	p.CurrentDirection = WEST
-	p.Move(1)
+	p.CurrentDirection = RIGHT
+	p.Move(steps)
 }
 
 func (p *P) MoveRight(steps int) {
-	p.CurrentDirection = EAST
-	p.Move(1)
+	p.CurrentDirection = LEFT
+	p.Move(steps)
 }
 
 func (p *P) MoveUp(steps int) {
-	p.CurrentDirection = NORTH
-	p.Move(1)
+	p.CurrentDirection = UP
+	p.Move(steps)
 }
 
 func (p *P) MoveDown(steps int) {
-	p.CurrentDirection = SOUTH
-	p.Move(1)
+	p.CurrentDirection = DOWN
+	p.Move(steps)
 }
 
 func (p *P) Move(steps int) {
@@ -56,11 +56,11 @@ func (p *P) Move(steps int) {
 	p.Y += DirectionMap[p.CurrentDirection].y * steps
 }
 
-func (p *P) Left() {
+func (p *P) TurnLeft() {
 	p.CurrentDirection = (p.CurrentDirection - 1 + 4) % 4
 }
 
-func (p *P) Right() {
+func (p *P) TurnRight() {
 	p.CurrentDirection = (p.CurrentDirection + 1) % 4
 }
 

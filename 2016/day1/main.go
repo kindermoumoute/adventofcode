@@ -28,9 +28,9 @@ func parse(s string) (int, int) {
 			continue
 		}
 		if line[0] == 'R' {
-			currentPosition.Right()
+			currentPosition.TurnRight()
 		} else {
-			currentPosition.Left()
+			currentPosition.TurnLeft()
 		}
 		nb, err := strconv.Atoi(line[1:])
 		pkg.Check(err)
