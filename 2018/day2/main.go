@@ -18,8 +18,7 @@ func parse(s string) (int, string) {
 
 	// part1
 	mapLineChar := make(map[string]map[int32]int)
-	twoTimes := 0
-	threeTimes := 0
+	twoTimes, threeTimes := 0, 0
 	for _, line := range lines {
 		mapLineChar[line] = make(map[int32]int)
 		for _, char := range line {
@@ -27,20 +26,16 @@ func parse(s string) (int, string) {
 		}
 		countTwoExist, countThreeExist := false, false
 		for _, count := range mapLineChar[line] {
-			if !countTwoExist && count == 2 {
+			switch {
+			case countTwoExist && countThreeExist:
+				break
+			case !countTwoExist && count == 2:
+
 				countTwoExist = true
 				twoTimes++
-			}
-			if !countTwoExist && count == 2 {
-				countTwoExist = true
-				twoTimes++
-			}
-			if !countThreeExist && count == 3 {
+			case !countThreeExist && count == 3:
 				countThreeExist = true
 				threeTimes++
-			}
-			if countTwoExist && countThreeExist {
-				break
 			}
 		}
 	}
@@ -70,5 +65,6 @@ dance:
 }
 
 func main() {
+	tests.Run(run, false)
 	fmt.Println(run(puzzle))
 }

@@ -1,5 +1,15 @@
 package main
 
+import "github.com/kindermoumoute/adventofcode/pkg"
+
+var tests = pkg.TestCases{
+	{
+		puzzle,
+		`7776`,
+		`wlkigsqyfecjqqmnxaktdrhbz`,
+	},
+}
+
 var puzzle = `wlpiogsvdfecjdqmnxakudrhbz
 wbpioesvyfecjuqmlxaktdrhbz
 blviogavyfecjuqmnxaktdrhbz
