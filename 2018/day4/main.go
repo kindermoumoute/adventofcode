@@ -10,17 +10,6 @@ import (
 	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
-type result struct {
-	ID     int
-	minute int
-
-	max int // temp variable used for finding max
-}
-
-func (r result) result() string {
-	return strconv.Itoa(r.minute * r.ID)
-}
-
 // returns part1 and part2
 func run(input string) (string, string) {
 	records := parse(input).reposeRecords()
@@ -120,6 +109,17 @@ func (g ReposeRecords) findPart2() result {
 		}
 	}
 	return part2
+}
+
+type result struct {
+	ID     int
+	minute int
+
+	max int // temp variable used for finding max
+}
+
+func (r result) result() string {
+	return strconv.Itoa(r.minute * r.ID)
 }
 
 func main() {
