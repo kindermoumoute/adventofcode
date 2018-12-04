@@ -10,107 +10,116 @@ import (
 	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
-type guard struct {
-	ID          int
-	minutes     int
-	minutChosen int
-	allMinutes  map[int]int
-	ts          time.Time
+type result struct {
+	ID     int
+	minute int
+
+	max int // temp variable used for finding max
+}
+
+func (r result) result() string {
+	return strconv.Itoa(r.minute * r.ID)
 }
 
 // returns part1 and part2
 func run(input string) (string, string) {
-	day4 := parse(input)
-	guards := make(map[int]*guard)
-	currentGuard := 0
-	maxSleep := guard{}
-	for _, list := range day4 {
-		switch list.text {
-		case "falls asleep":
-			guards[currentGuard].ts = list.toTs()
-			fmt.Println("guard", currentGuard, " feels asleep ", list.toTs())
-		case "wakes up":
-			guards[currentGuard].minutes += int(list.toTs().Sub(guards[currentGuard].ts).Minutes())
-			for i := guards[currentGuard].ts.Minute(); i != list.toTs().Minute(); {
-				fmt.Println("inc min ", i)
-				guards[currentGuard].allMinutes[i]++
-				i = (i + 1) % 60
-			}
-			if guards[currentGuard].minutes > maxSleep.minutes {
-				maxSleep.ID = guards[currentGuard].ID
-				maxSleep.minutes = guards[currentGuard].minutes
-				maxSleep.minutChosen = list.toTs().Minute() - 1
-				maxSleep.allMinutes = guards[currentGuard].allMinutes
-				fmt.Println("guard", currentGuard, " minut chosen ", maxSleep.minutChosen)
-
-			}
-			fmt.Println("guard", currentGuard, " wakes up ", list.toTs(), ", ", guards[currentGuard].minutes, " minutes asleep")
-		default:
-			ID := 0
-			_, err := fmt.Sscanf(list.text, "Guard #%d", &ID)
-			pkg.Check(err)
-			_, ok := guards[ID]
-			if !ok {
-				guards[ID] = &guard{ID: ID, allMinutes: make(map[int]int)}
-			}
-			currentGuard = ID
-			fmt.Println("new guard:", currentGuard)
-		}
-	}
-	max := 0
-	minutChosen := 0
-	for i, min := range maxSleep.allMinutes {
-		if min > max {
-			max = min
-			minutChosen = i
-		}
-	}
-
-	ID := 0
-	max = 0
-	minutChosenPart2 := 0
-	for _, guard := range guards {
-		for i, min := range guard.allMinutes {
-			if min > max {
-				ID = guard.ID
-				max = min
-				minutChosenPart2 = i
-			}
-		}
-	}
-	// fmt.Println("PASS")
-	return strconv.Itoa(minutChosen * maxSleep.ID), strconv.Itoa(minutChosenPart2 * ID)
+	records := parse(input).reposeRecords()
+	return records.findPart1().result(), records.findPart2().result()
 }
 
-type ByDate []day4
-type day4 struct {
-	year, month, day, hour, minute int
-
-	text string
-}
-
-func (a ByDate) Len() int           { return len(a) }
-func (a ByDate) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByDate) Less(i, j int) bool { return a[i].toTs().Unix() < a[j].toTs().Unix() }
-
-func (d day4) toTs() time.Time {
-	return time.Date(d.year, time.Month(d.month), d.day, d.hour, d.minute, 0, 0, time.UTC)
-}
-
-func parse(s string) []day4 {
+func parse(s string) Records {
 	lines := strings.Split(s, "\n")
-	newDay := make([]day4, len(lines))
+	records := make(Records, len(lines))
 	for i, line := range lines {
-		tmp := ""
-		n, err := fmt.Sscanf(line, "[%d-%d-%d %d:%d] %s %s", &newDay[i].year, &newDay[i].month, &newDay[i].day, &newDay[i].hour, &newDay[i].minute, &newDay[i].text, &tmp)
-		newDay[i].text += " " + tmp
+		year, month, day, hour, minute, textPart1, textPart2 := 0, 0, 0, 0, 0, "", ""
+		n, err := fmt.Sscanf(line, "[%d-%d-%d %d:%d] %s %s", &year, &month, &day, &hour, &minute, &textPart1, &textPart2)
+		records[i].TS = time.Date(year, time.Month(month), day, hour, minute, 0, 0, time.UTC)
+		records[i].text = textPart1 + " " + textPart2
 		pkg.Check(err)
 		if n != 7 {
 			panic("N parameters expected")
 		}
 	}
-	sort.Sort(ByDate(newDay))
-	return newDay
+	sort.Sort(records)
+	return records
+}
+
+type Records []Record
+
+type Record struct {
+	TS   time.Time
+	text string
+}
+
+func (r Records) Len() int           { return len(r) }
+func (r Records) Swap(i, j int)      { r[i], r[j] = r[j], r[i] }
+func (r Records) Less(i, j int) bool { return r[i].TS.Unix() < r[j].TS.Unix() }
+
+func (r Records) reposeRecords() ReposeRecords {
+	reposeRecords := make(ReposeRecords)
+	currentGuardID := 0
+	var napStartTime time.Time
+	for _, record := range r {
+		switch record.text {
+		case "falls asleep":
+			napStartTime = record.TS
+		case "wakes up":
+			reposeRecords[currentGuardID].cumulatedMinutes += int(record.TS.Sub(napStartTime).Minutes())
+			for i := napStartTime.Minute(); i != record.TS.Minute(); i = (i + 1) % 60 {
+				reposeRecords[currentGuardID].minutes[i]++
+			}
+		default:
+			_, err := fmt.Sscanf(record.text, "Guard #%d", &currentGuardID)
+			pkg.Check(err)
+			if _, ok := reposeRecords[currentGuardID]; !ok {
+				reposeRecords[currentGuardID] = &ReposeRecord{GuardID: currentGuardID}
+			}
+		}
+	}
+	return reposeRecords
+}
+
+type ReposeRecords map[int]*ReposeRecord
+
+type ReposeRecord struct {
+	GuardID          int
+	cumulatedMinutes int
+	minutes          [60]int
+}
+
+// find guard with longest cumulated minutes
+// then find longest minute from this guard
+func (g ReposeRecords) findPart1() result {
+	part1 := result{}
+	for currentGuard, guard := range g {
+		if guard.cumulatedMinutes > part1.max {
+			part1.ID = g[currentGuard].GuardID
+			part1.max = g[currentGuard].cumulatedMinutes
+		}
+	}
+	part1.max = 0
+	for minute, minuteCount := range g[part1.ID].minutes {
+		if minuteCount > part1.max {
+			part1.max = minuteCount
+			part1.minute = minute
+		}
+	}
+	return part1
+}
+
+// then find longest minute among all guards
+func (g ReposeRecords) findPart2() result {
+	part2 := result{}
+	for _, guard := range g {
+		for minute, minuteCount := range guard.minutes {
+			if minuteCount > part2.max {
+				part2.max = minuteCount
+				part2.ID = guard.GuardID
+				part2.minute = minute
+			}
+		}
+	}
+	return part2
 }
 
 func main() {
