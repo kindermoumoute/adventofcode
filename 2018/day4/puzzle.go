@@ -24,6 +24,11 @@ var tests = pkg.TestCases{
 		`240`,
 		`4455`,
 	},
+	{
+		puzzle,
+		`109659`,
+		`36371`,
+	},
 }
 
 var puzzle = `[1518-07-14 00:48] wakes up

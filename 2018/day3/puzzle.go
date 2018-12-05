@@ -10,6 +10,11 @@ var tests = pkg.TestCases{
 		`4`,
 		`3`,
 	},
+	{
+		puzzle,
+		`118223`,
+		`412`,
+	},
 }
 
 var puzzle = `#1 @ 669,271: 17x11
