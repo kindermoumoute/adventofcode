@@ -29,6 +29,5 @@ func parse(s string) {
 }
 
 func main() {
-	tests.Run(run, false)
-	fmt.Println(run(puzzle))
+	pkg.Execute(run, tests, puzzle, true)
 }
