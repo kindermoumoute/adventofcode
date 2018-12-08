@@ -10,7 +10,7 @@ import (
 // returns part1 and part2
 func run(input string) (string, string) {
 	// part1
-	list := pkg.ParseIntList(input)
+	list := pkg.ParseIntList(input, "\n")
 	part1 := strconv.Itoa(pkg.Sum(list...))
 
 	// part2
