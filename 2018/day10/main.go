@@ -73,23 +73,23 @@ func (p *Picture) DiffY() int {
 }
 
 func (p Picture) String() string {
-	view := "\n"
-	const limit = 200
-	if limit < pkg.Abs(p.botRightX-p.topLeftX) || limit < pkg.Abs(p.botRightY-p.topLeftY) {
+	const sizeLimit = 200
+	if sizeLimit < p.DiffX() || sizeLimit < p.DiffY() {
 		return ""
 	}
+	pic := "\n"
 	for j := p.topLeftY; j <= p.botRightY; j++ {
 		for i := p.topLeftX; i <= p.botRightX; i++ {
 			_, exist := p.points[pkg.P{X: i, Y: j}]
 			if exist {
-				view += "#"
+				pic += "#"
 			} else {
-				view += "."
+				pic += "."
 			}
 		}
-		view += "\n"
+		pic += "\n"
 	}
-	return view
+	return pic
 }
 
 func parse(s string) []*movingPoint {
