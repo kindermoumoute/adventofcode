@@ -12,7 +12,7 @@ func run(input string) (string, string) {
 	//list := parse(input)
 	//intList := pkg.ParseIntList(input)
 
-	// fmt.Println("PASS")
+	//strconv.Itoa()
 	return "", ""
 }
 
@@ -29,5 +29,5 @@ func parse(s string) {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, true)
+	pkg.Execute(run, nil, puzzle, true)
 }
