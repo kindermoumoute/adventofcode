@@ -32,3 +32,39 @@ func TestNormalMap(t *testing.T) {
 	cell := p.FindInMap(testMap, originTestMap)
 	assert.Equal("P", cell)
 }
+
+//
+//func TestAstar(t *testing.T) {
+//	assert := assert.New(t)
+//	emptyPoints := make(map[P]*PAstar)
+//	points := []*PAstar{
+//		{P: P{X: 2, Y: 0}},
+//		{P: P{X: 2, Y: 1}},
+//		{P: P{X: 1, Y: 1}},
+//		{P: P{X: 2, Y: 2}},
+//	}
+//	orig := points[0]
+//	end := points[3]
+//	for i := 0; i < 5; i++ {
+//		for j := 0; j < 5; j++ {
+//			p := P{X: i, Y: j}
+//			emptyPoints[p] = &PAstar{P: p, EmptyPoints: emptyPoints}
+//		}
+//	}
+//
+//	for i := range points {
+//		p := points[i].P
+//		points[i] = emptyPoints[p]
+//		points[i].EmptyPoints = emptyPoints
+//		//delete(emptyPoints, p)
+//
+//		fmt.Println(emptyPoints[p] == points[i])
+//	}
+//
+//	pathers, dist, found := astar.Path(orig, end)
+//	assert.Equal(true, found, "found")
+//	assert.Equal(4.0, dist, "distance")
+//	assert.Equal(1, pathers[len(pathers)-2].(*PAstar).P.X, "next X")
+//	assert.Equal(0, pathers[len(pathers)-2].(*PAstar).P.Y, "next Y")
+//	fmt.Println(pathers, dist, found)
+//}
