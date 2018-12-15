@@ -11,7 +11,7 @@ import (
 func run(input string) (string, string) {
 	//list := parse(input)
 	//intList := pkg.ParseIntList(input)
-
+	// bufio.NewReader(os.Stdin).ReadBytes('\n')
 	//strconv.Itoa()
 	return "", ""
 }

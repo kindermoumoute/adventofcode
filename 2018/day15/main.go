@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -27,14 +29,20 @@ var ExpectedSteps = []int{0, 5988, 11922, 17802, 23628, 29370, 35028, 40593, 460
 func (d *day15) part1() int {
 	rounds := 0
 	for {
+		sort.SliceStable(d.warriors, func(i, j int) bool {
+			return d.warriors[i].p.Score() < d.warriors[j].p.Score()
+		})
+
 		for i := 0; i < len(d.warriors); i++ {
 			sum, winnerRace := d.warriors.HPs()
 			if winnerRace != -1 {
+				fmt.Println(rounds, sum)
 				return rounds * sum
 			}
-			if i == 0 {
+			if d.rowLength == 32 && i == 0 {
 				fmt.Println(rounds, rounds*sum, ExpectedSteps[rounds])
 				if rounds*sum != ExpectedSteps[rounds] {
+					//if rounds == 14 {
 					panic("unexpected")
 				}
 			}
@@ -59,13 +67,14 @@ func (d *day15) part1() int {
 		}
 		rounds++
 
-		fmt.Println("strating round", rounds)
-		fmt.Println(d.String())
-		fmt.Println()
-
-		sort.SliceStable(d.warriors, func(i, j int) bool {
-			return d.warriors[i].p.Score() < d.warriors[j].p.Score()
-		})
+		if d.rowLength == 32 {
+			m := d.String()
+			bufio.NewReader(os.Stdin).ReadBytes('\n')
+			fmt.Println("round", rounds)
+			fmt.Println()
+			fmt.Println(m)
+			fmt.Println()
+		}
 	}
 }
 
@@ -136,7 +145,6 @@ func (w *warrior) attack() (int, bool) {
 			if target.HP == w.data.warriors[li].HP && target.p.Score() < w.data.warriors[li].p.Score() {
 				li = ti
 			}
-
 		}
 	}
 
@@ -149,6 +157,8 @@ func (w *warrior) attack() (int, bool) {
 
 func (w *warrior) moveTowardClosestTarget() {
 	w.BuildEmptyMap()
+
+	//fmt.Println(w.p.P, "==>", nextStep.P)
 
 	shortest := 9999999999.0
 	var nextStep *pkg.PAstar
@@ -171,7 +181,6 @@ func (w *warrior) moveTowardClosestTarget() {
 			nextStep = pathers[len(pathers)-2].(*pkg.PAstar)
 			shortest = dist
 		}
-
 	}
 	if nextStep == nil {
 		return
@@ -278,5 +287,5 @@ func parse(s string) *day15 {
 }
 
 func main() {
-	pkg.Execute(run, nil, puzzle, false)
+	pkg.Execute(run, tests, puzzle, false)
 }
