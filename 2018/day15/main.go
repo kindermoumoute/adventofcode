@@ -14,13 +14,23 @@ import (
 // returns part1 and part2
 func run(input string) (string, string) {
 	d15 := parse(input)
-
-	//fmt.Println(d15.String())
-	//fmt.Println()
-	return strconv.Itoa(d15.part1()), ""
+	part1, winnerRace, winnerCount := d15.part1()
+	part2 := part1
+	attackPower := 4
+	for winnerRace != ELF || winnerCount != d15.ElfCount {
+		d15 := parse(input)
+		for _, w := range d15.warriors {
+			if w.race == ELF {
+				w.attackPower = attackPower
+			}
+		}
+		part2, winnerRace, winnerCount = d15.part1()
+		attackPower++
+	}
+	return strconv.Itoa(part1), strconv.Itoa(part2)
 }
 
-func (d *day15) part1() int {
+func (d *day15) part1() (int, Race, int) {
 	rounds := 0
 	for {
 		sort.SliceStable(d.warriors, func(i, j int) bool {
@@ -28,10 +38,10 @@ func (d *day15) part1() int {
 		})
 
 		for i := 0; i < len(d.warriors); i++ {
-			sum, winnerRace := d.warriors.HPs()
+			sum, winnerRace, winnerCount := d.warriors.HPs()
 			if winnerRace != -1 {
 				//fmt.Println(rounds, sum)
-				return rounds * sum
+				return rounds * sum, winnerRace, winnerCount
 			}
 
 			w := d.warriors[i]
@@ -64,18 +74,20 @@ func (d *day15) part1() int {
 	}
 }
 
-func (wrs Warriors) HPs() (int, Race) {
+func (wrs Warriors) HPs() (int, Race, int) {
 	HPs := make(map[Race]int)
+	winnerCount := 0
 	for _, w := range wrs {
 		HPs[w.race] += w.HP
+		winnerCount++
 	}
 	if len(HPs) == 1 {
 		for race, sum := range HPs {
-			return sum, race
+			return sum, race, winnerCount
 		}
 	}
 
-	return HPs[ELF] + HPs[GOBLIN], -1
+	return HPs[ELF] + HPs[GOBLIN], -1, 0
 }
 
 type Warriors []*warrior
@@ -202,6 +214,7 @@ func (w *warrior) BuildEmptyMap() {
 type day15 struct {
 	warriors Warriors
 
+	ElfCount                int
 	rowLength, columnLength int
 	emptyMap                map[pkg.P]*pkg.Tile
 }
@@ -266,6 +279,7 @@ func parse(s string) *day15 {
 			switch point {
 			case '.':
 			case 'E':
+				d15.ElfCount++
 				e.race = ELF
 				d15.warriors = append(d15.warriors, e)
 			case 'G':
