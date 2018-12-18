@@ -3,8 +3,6 @@ package pkg
 import (
 	"fmt"
 	"math"
-
-	"github.com/beefsack/go-astar"
 )
 
 const (
@@ -29,18 +27,8 @@ type P struct {
 	CurrentDirection int
 }
 
-type PAstar struct {
-	P           P
-	RowLenght   int
-	EmptyPoints map[P]*PAstar
-}
-
 func NewPoint() *P {
 	return &P{}
-}
-
-func (p *PAstar) SetEmptyPoints(c map[P]*PAstar) {
-	p.EmptyPoints = c
 }
 
 func (p P) String() string {
@@ -120,35 +108,4 @@ func (p *P) FourWays() []P {
 		adjs[i] = newP
 	}
 	return adjs
-}
-
-func (p *PAstar) PathNeighbors() []astar.Pather {
-	adjs := make([]astar.Pather, 0, 4)
-
-	//fmt.Print(p.P)
-	for _, newP := range p.P.FourWays() {
-		ringP, exist := p.EmptyPoints[newP]
-		if exist {
-			//fmt.Print(" EXIST ", newP)
-			ringP.EmptyPoints = p.EmptyPoints
-			adjs = append(adjs, ringP)
-		}
-	}
-	//fmt.Println()
-	return adjs
-}
-
-// PathNeighborCost returns the cost of the tube leading to Truck.
-func (p *PAstar) PathNeighborCost(to astar.Pather) float64 {
-	return 1.0
-}
-
-// PathEstimatedCost uses Manhattan distance to estimate orthogonal distance
-func (p *PAstar) PathEstimatedCost(to astar.Pather) float64 {
-
-	return float64(p.P.DistFrom(&to.(*PAstar).P))
-}
-
-func (p *PAstar) Score() int {
-	return p.P.Y*p.RowLenght + p.P.X
 }

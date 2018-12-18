@@ -36,8 +36,8 @@ func TestNormalMap(t *testing.T) {
 //
 //func TestAstar(t *testing.T) {
 //	assert := assert.New(t)
-//	emptyPoints := make(map[P]*PAstar)
-//	points := []*PAstar{
+//	emptyPoints := make(map[P]*Tile)
+//	points := []*Tile{
 //		{P: P{X: 2, Y: 0}},
 //		{P: P{X: 2, Y: 1}},
 //		{P: P{X: 1, Y: 1}},
@@ -48,7 +48,7 @@ func TestNormalMap(t *testing.T) {
 //	for i := 0; i < 5; i++ {
 //		for j := 0; j < 5; j++ {
 //			p := P{X: i, Y: j}
-//			emptyPoints[p] = &PAstar{P: p, EmptyPoints: emptyPoints}
+//			emptyPoints[p] = &Tile{P: p, EmptyPoints: emptyPoints}
 //		}
 //	}
 //
@@ -64,7 +64,7 @@ func TestNormalMap(t *testing.T) {
 //	pathers, dist, found := astar.Path(orig, end)
 //	assert.Equal(true, found, "found")
 //	assert.Equal(4.0, dist, "distance")
-//	assert.Equal(1, pathers[len(pathers)-2].(*PAstar).P.X, "next X")
-//	assert.Equal(0, pathers[len(pathers)-2].(*PAstar).P.Y, "next Y")
+//	assert.Equal(1, pathers[len(pathers)-2].(*Tile).P.X, "next X")
+//	assert.Equal(0, pathers[len(pathers)-2].(*Tile).P.Y, "next Y")
 //	fmt.Println(pathers, dist, found)
 //}

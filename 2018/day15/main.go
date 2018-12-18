@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -17,14 +15,10 @@ import (
 func run(input string) (string, string) {
 	d15 := parse(input)
 
-	fmt.Println(d15.String())
-	fmt.Println()
+	//fmt.Println(d15.String())
+	//fmt.Println()
 	return strconv.Itoa(d15.part1()), ""
-
-	return "", ""
 }
-
-var ExpectedSteps = []int{0, 5988, 11922, 17802, 23628, 29370, 35028, 40593, 46080, 51462, 56760, 61974, 67032, 71955, 76734, 81405, 85968, 90372, 94662, 98781, 102780, 106659, 110638, 114563, 118320, 121750, 125346, 128952, 132300, 135459, 138330, 140988, 143520, 145926, 148206, 150360, 152388, 154327, 156370, 158145, 159800, 161335, 162750, 164045, 165088, 166050, 167440, 168589, 169728, 170765, 171700, 172533, 173264, 173893, 174420, 174845, 175168, 175389, 175160, 175289, 175560, 176351, 177010, 178227, 179520, 180765, 181962, 183111, 184212, 185265, 186270, 187227, 188208, 189946, 191660, 193350, 195016, 196658}
 
 func (d *day15) part1() int {
 	rounds := 0
@@ -36,15 +30,8 @@ func (d *day15) part1() int {
 		for i := 0; i < len(d.warriors); i++ {
 			sum, winnerRace := d.warriors.HPs()
 			if winnerRace != -1 {
-				fmt.Println(rounds, sum)
+				//fmt.Println(rounds, sum)
 				return rounds * sum
-			}
-			if d.rowLength == 32 && i == 0 {
-				fmt.Println(rounds, rounds*sum, ExpectedSteps[rounds])
-				if rounds*sum != ExpectedSteps[rounds] {
-					//if rounds == 14 {
-					panic("unexpected")
-				}
 			}
 
 			w := d.warriors[i]
@@ -54,10 +41,10 @@ func (d *day15) part1() int {
 				attacked, _ = w.attack()
 			}
 			if attacked != -1 {
-				fmt.Println(w, "attack", d.warriors[attacked])
+				//fmt.Println(w, "attack", d.warriors[attacked])
 				d.warriors[attacked].HP -= w.attackPower
 				if d.warriors[attacked].HP <= 0 {
-					fmt.Println(d.warriors[attacked], "is dead")
+					//fmt.Println(d.warriors[attacked], "is dead")
 					d.warriors = append(d.warriors[:attacked], d.warriors[attacked+1:]...)
 					if attacked < i {
 						i--
@@ -67,14 +54,13 @@ func (d *day15) part1() int {
 		}
 		rounds++
 
-		if d.rowLength == 32 {
-			m := d.String()
-			bufio.NewReader(os.Stdin).ReadBytes('\n')
-			fmt.Println("round", rounds)
-			fmt.Println()
-			fmt.Println(m)
-			fmt.Println()
-		}
+		//if d.rowLength == 32 {
+		//	m := d.String()
+		//	fmt.Println("round", rounds)
+		//	fmt.Println()
+		//	fmt.Println(m)
+		//	fmt.Println()
+		//}
 	}
 }
 
@@ -104,7 +90,7 @@ func (r Race) String() string {
 
 type warrior struct {
 	race        Race
-	p           *pkg.PAstar
+	p           *pkg.Tile
 	HP          int
 	attackPower int
 
@@ -114,13 +100,13 @@ type warrior struct {
 func (wrs Warriors) String() string {
 	str := ""
 	for i := 0; i < len(wrs); i++ {
-		str += " |" + wrs[i].String()
+		str += " " + wrs[i].String()
 	}
 	return str
 }
 
 func (w *warrior) String() string {
-	return fmt.Sprintf("%v %v %d", w.race, w.p.P, w.HP)
+	return fmt.Sprintf("%v(%d)", w.race, w.HP)
 }
 
 func (w *warrior) attack() (int, bool) {
@@ -158,40 +144,48 @@ func (w *warrior) attack() (int, bool) {
 func (w *warrior) moveTowardClosestTarget() {
 	w.BuildEmptyMap()
 
-	//fmt.Println(w.p.P, "==>", nextStep.P)
-
 	shortest := 9999999999.0
-	var nextStep *pkg.PAstar
-	var closestPointToAttack *pkg.PAstar
-	for _, target := range w.data.warriors {
-		if target.race != w.race {
-			//fmt.Println(w.p.P, "==>", target.p.P)
-			w.p.EmptyPoints[target.p.P] = target.p
-			pathers, dist, found := astar.Path(w.p, target.p)
-			delete(w.p.EmptyPoints, target.p.P)
-			if !found || dist > shortest {
-				continue
-			}
+	var nextStep *pkg.Tile
+	var closestPointToAttack *pkg.Tile
 
-			pointToAttack := pathers[1].(*pkg.PAstar)
-			if dist == shortest && pointToAttack.Score() > closestPointToAttack.Score() {
-				continue
+	for _, way := range w.p.P.FourWays() {
+		p, exist := w.p.EmptyPoints[way]
+		if exist {
+			p.EmptyPoints = w.p.EmptyPoints
+			for _, target := range w.data.warriors {
+				if target.race != w.race {
+					//fmt.Println(w.p.P, "==>", target.p.P)
+					p.EmptyPoints[target.p.P] = target.p
+					pathers, dist, found := astar.Path(p, target.p)
+					delete(p.EmptyPoints, target.p.P)
+					if !found || dist > shortest {
+						continue
+					}
+
+					pointToAttack := pathers[1].(*pkg.Tile)
+					if dist == shortest && pointToAttack.Score() > closestPointToAttack.Score() {
+						continue
+					}
+
+					if dist == shortest && p.Score() > nextStep.Score() {
+						continue
+					}
+					closestPointToAttack = pointToAttack
+					nextStep = p
+					shortest = dist
+				}
 			}
-			closestPointToAttack = pointToAttack
-			nextStep = pathers[len(pathers)-2].(*pkg.PAstar)
-			shortest = dist
 		}
 	}
 	if nextStep == nil {
 		return
 	}
 
-	//fmt.Println(w.p.P, "==>", nextStep.P)
 	w.p = nextStep
 }
 
 func (w *warrior) BuildEmptyMap() {
-	newMap := make(map[pkg.P]*pkg.PAstar)
+	newMap := make(map[pkg.P]*pkg.Tile)
 	for k, v := range w.data.emptyMap {
 		newMap[k] = v
 	}
@@ -209,7 +203,7 @@ type day15 struct {
 	warriors Warriors
 
 	rowLength, columnLength int
-	emptyMap                map[pkg.P]*pkg.PAstar
+	emptyMap                map[pkg.P]*pkg.Tile
 }
 
 func (d *day15) String() string {
@@ -252,7 +246,7 @@ func parse(s string) *day15 {
 	lines := strings.Split(s, "\n")
 	d15 := &day15{
 		warriors:     Warriors{},
-		emptyMap:     make(map[pkg.P]*pkg.PAstar),
+		emptyMap:     make(map[pkg.P]*pkg.Tile),
 		columnLength: len(lines),
 	}
 	for j, line := range lines {
@@ -262,7 +256,7 @@ func parse(s string) *day15 {
 		for i, point := range line {
 
 			p := pkg.P{X: i, Y: j}
-			pA := &pkg.PAstar{P: p, RowLenght: d15.rowLength}
+			pA := &pkg.Tile{P: p, RowLenght: d15.rowLength}
 			e := &warrior{
 				p:           pA,
 				HP:          200,
