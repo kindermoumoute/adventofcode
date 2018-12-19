@@ -26,7 +26,6 @@ func run(input string) (string, string) {
 		registers.r[0] = i
 		for registers.r[registers.ip] >= 0 && registers.r[registers.ip] < len(instructions) {
 			if registers.r[registers.ip] == 2 && i == 1 {
-				fmt.Println("start p2", registers.r)
 				part2 := 0
 				for j := 1; j < registers.r[4]+1; j++ {
 					if registers.r[4]%j == 0 {
