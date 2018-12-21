@@ -116,7 +116,7 @@ func parse(s string) ([]Instruction, int) {
 }
 
 func main() {
-	pkg.Execute(run, nil, puzzle, true)
+	pkg.Execute(run, tests, puzzle, true)
 }
 
 func (r *Registers) setr(a, b, c int) {
