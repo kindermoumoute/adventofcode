@@ -74,13 +74,14 @@ func run(input string) (string, string) {
 			if !exist {
 				str += "#"
 			} else {
-
-				_, dist, found := astar.Path(orig, tile)
-				if dist >= 1999 {
-					part2++
-				}
-				if found && dist > maxDist {
-					maxDist = dist
+				if i%2 == 0 && j%2 == 0 {
+					_, dist, found := astar.Path(orig, tile)
+					if dist >= 2000 {
+						part2++
+					}
+					if found && dist > maxDist {
+						maxDist = dist
+					}
 				}
 				str += "."
 			}
@@ -88,7 +89,7 @@ func run(input string) (string, string) {
 		str += "\n"
 	}
 	fmt.Println(str)
-	return strconv.Itoa(int(maxDist) / 2), strconv.Itoa(part2 / 2)
+	return strconv.Itoa(int(maxDist) / 2), strconv.Itoa(part2)
 }
 
 func main() {
