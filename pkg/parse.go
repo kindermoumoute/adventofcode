@@ -15,3 +15,13 @@ func ParseIntList(s, sep string) []int {
 	}
 	return list
 }
+
+func ParseIntMap(s, sep string) map[int]int {
+	m := make(map[int]int)
+	for i, line := range strings.Split(s, sep) {
+		nb, err := strconv.Atoi(line)
+		Check(err)
+		m[i] = nb
+	}
+	return m
+}
