@@ -12,22 +12,20 @@ func run(input string) (string, string) {
 	list1, list2 := parse(input)
 
 	crossMap := map[pkg.P]int{}
-	stepsMap := []map[pkg.P]int{0: {}, 1: {}}
+	stepsMap := []map[pkg.P]int(nil)
 	for n, currentList := range [][]string{list1, list2} {
 		p := pkg.NewPoint()
+		stepsMap = append(stepsMap, map[pkg.P]int{})
 		for _, move := range currentList {
 			steps, err := strconv.Atoi(move[1:])
 			pkg.Check(err)
-			switch move[0] {
-			case 'R':
-				markPoints(p, pkg.RIGHT, steps, n, crossMap, stepsMap[n])
-			case 'D':
-				markPoints(p, pkg.DOWN, steps, n, crossMap, stepsMap[n])
-			case 'U':
-				markPoints(p, pkg.UP, steps, n, crossMap, stepsMap[n])
-			case 'L':
-				markPoints(p, pkg.LEFT, steps, n, crossMap, stepsMap[n])
-			}
+			dir := map[uint8]int{
+				'R': pkg.RIGHT,
+				'D': pkg.DOWN,
+				'U': pkg.UP,
+				'L': pkg.LEFT,
+			}[move[0]]
+			markPoints(p, dir, steps, n, crossMap, stepsMap[n])
 		}
 	}
 

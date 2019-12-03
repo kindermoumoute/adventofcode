@@ -4,4 +4,4 @@ notifications:
 
 language: go
 go:
-  - "1.11"
+  - "1.13"
