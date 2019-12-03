@@ -25,6 +25,7 @@ var DirectionMap = map[int]struct {
 type P struct {
 	X, Y             int
 	CurrentDirection int
+	Steps            int
 }
 
 func NewPoint() *P {
@@ -58,6 +59,7 @@ func (p *P) MoveDown(steps int) {
 func (p *P) Move(steps int) {
 	p.X += DirectionMap[p.CurrentDirection].x * steps
 	p.Y += DirectionMap[p.CurrentDirection].y * steps
+	p.Steps += steps
 }
 
 func (p *P) TurnLeft() {
