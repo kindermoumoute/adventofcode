@@ -22,6 +22,6 @@ func TestCheckPass(t *testing.T) {
 		"123789": false,
 	}
 	for tt, expected := range testCases {
-		assert.Equal(t, expected, checkPassword([]byte(tt)), "%s fail", tt)
+		assert.Equal(t, expected, checkPassword([]byte(tt), false), "%s fail", tt)
 	}
 }
