@@ -30,21 +30,20 @@ func parse(s string) (int, int) {
 }
 
 func checkPassword(password []byte, part1 bool) bool {
-	if len(password) < 6 {
+	if len(password) < 6 { // 6 characters
 		return false
 	}
 
-	// no increasing order
 	countChar := map[byte]int{}
 	for i := 0; i < len(password); i++ {
-		if i != 0 && password[i-1] > password[i] {
+		if i != 0 && password[i-1] > password[i] { // no increasing order
 			return false
 		}
 		countChar[password[i]]++
 	}
 
 	for _, count := range countChar {
-		if count == 2 || part1 && count >= 2 {
+		if count == 2 || part1 && count >= 2 { // exactly 2 matching characters
 			return true
 		}
 	}
