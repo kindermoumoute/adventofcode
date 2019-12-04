@@ -25,3 +25,9 @@ func ParseIntMap(s, sep string) map[int]int {
 	}
 	return m
 }
+
+func MustAtoi(s string) int {
+	i, err := strconv.Atoi(s)
+	Check(err)
+	return i
+}
