@@ -1,46 +1,76 @@
 package intcode
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 const (
 	NOP = iota
-	ADD_RRR
-	MUL_RRR
-	//SUB_RRR // <unofficial>
-	//DIV_RRR
-	//ADD_RVR
-	//MUL_RVR
-	//SUB_RVR
-	//DIV_RVR
-	//GT_RRR
-	//GTE_RRR
-	//EQ_RRR
-	//LTE_RRR
-	//LT_RRR // </unofficial>
+	ADD
+	MUL
+	IN
+	OUT
+	NON_ZERO
+	ZERO
+	LT
+	EQ
+	// don't forget to add new opcodes in knownOpcodes
 
 	EOF = 99
 )
 
 var (
-	knownOpCode = map[int]string{
-		ADD_RRR: "adding",
-		MUL_RRR: "multiplying",
-		EOF:     "EOF",
+	knownOpcodes = map[int]struct {
+		Word       string
+		ParamCount int
+	}{
+		ADD:      {"ADD", 4},
+		MUL:      {"MULTIPLY", 4},
+		IN:       {"INPUT", 2},
+		OUT:      {"OUTPUT", 2},
+		EOF:      {"EOF", 1},
+		NON_ZERO: {"JUMP IF NON ZERO", 3},
+		ZERO:     {"JUMP IF ZERO", 3},
+		LT:       {"IS LOWER THAN", 4},
+		EQ:       {"IS EQUAL", 4},
 	}
 )
 
-type IntCode struct {
-	Memory map[int]int
-	Cursor int
+type ParameterMode int
 
+const (
+	ModePosition = ParameterMode(iota)
+	ModeImmediate
+)
+
+type IntCode struct {
+	Memory                   map[int]int
+	Cursor                   int
 	IgnoreNonAddressedMemory bool
-	Debug                    bool
+	DebugMode                DebugMode
+	Input                    Input
+	Output                   []int
+
+	//
+	disablePostInc bool
+	opcode         int
+	modes          []int
 }
 
-func New(memory map[int]int, cursorStart int) *IntCode {
+type Input struct {
+	Seq    []int
+	Cursor int
+}
+
+// New copy the intcode memory before creating a new IntCode object.
+func New(memory map[int]int, cursorStart int, seq ...int) *IntCode {
 	intCode := &IntCode{
 		Memory: map[int]int{},
 		Cursor: cursorStart,
+		Input: Input{
+			Seq: seq,
+		},
 	}
 	for k, v := range memory {
 		intCode.Memory[k] = v
@@ -48,100 +78,106 @@ func New(memory map[int]int, cursorStart int) *IntCode {
 	return intCode
 }
 
+// Run the IntCode program.
 func (c *IntCode) Run() *IntCode {
 	for {
-		target := c.Value(c.Cursor + 3) // debuging purpose
-		if c.Debug {
-			fmt.Println(c.String())
-			fmt.Println(knownOpCode[c.Memory[c.Cursor]], c.Address(c.Cursor+1), c.Address(c.Cursor+2))
-			fmt.Println("from addresses", c.Value(c.Cursor+1), c.Value(c.Cursor+2))
-			fmt.Printf("to address %d currently at value %d\n", target, c.Value(target))
-		}
-		switch c.Memory[c.Cursor] {
-		case ADD_RRR:
-			c.SetAddress(c.Cursor+3, c.Address(c.Cursor+1)+c.Address(c.Cursor+2))
-		case MUL_RRR:
-			c.SetAddress(c.Cursor+3, c.Address(c.Cursor+1)*c.Address(c.Cursor+2))
-		//case SUB_RRR:
-		//	c.SetValue(c.Cursor+3,c.Address(c.Cursor+1)-c.Address(c.Cursor+2))
-		//case DIV_RRR:
-		//	c.SetValue(c.Cursor+3,c.Address(c.Cursor+1)/c.Address(c.Cursor+2))
-		//case ADD_RVR:
-		//	c.SetValue(c.Cursor+3,c.Address(c.Cursor+1)+c.Value(c.Cursor+2))
-		//case MUL_RVR:
-		//	c.SetValue(c.Cursor+3,c.Address(c.Cursor+1)*c.Value(c.Cursor+2))
-		//case SUB_RVR:
-		//	c.SetValue(c.Cursor+3,c.Address(c.Cursor+1)-c.Value(c.Cursor+2))
-		//case DIV_RVR:
-		//	c.SetValue(c.Cursor+3,c.Address(c.Cursor+1)/c.Value(c.Cursor+2))
-		//case GT_RRR:
-		//	if c.Address(c.Cursor+1) > c.Address(c.Cursor+2) {
-		//		c.Cursor = c.Address(c.Cursor+3)
-		//	}
-		//case GTE_RRR:
-		//	if c.Address(c.Cursor+1) >= c.Address(c.Cursor+2) {
-		//		c.Cursor = c.Address(c.Cursor+3)
-		//	}
-		//case EQ_RRR:
-		//	if c.Address(c.Cursor+1) == c.Address(c.Cursor+2) {
-		//		c.Cursor = c.Address(c.Cursor+3)
-		//	}
-		//case LTE_RRR:
-		//	if c.Address(c.Cursor+1) <= c.Address(c.Cursor+2) {
-		//		c.Cursor = c.Address(c.Cursor+3)
-		//	}
-		//case LT_RRR:
-		//	if c.Address(c.Cursor+1) < c.Address(c.Cursor+2) {
-		//		c.Cursor = c.Address(c.Cursor+3)
-		//	}
+		c.opcode, c.modes = readInstruction(c.Memory[c.Cursor])
+		c.printDebug()
+
+		switch c.opcode {
+		case ADD:
+			c.Write(3, c.Read(1)+c.Read(2))
+		case MUL:
+			c.Write(3, c.Read(1)*c.Read(2))
+		case IN:
+			c.Write(1, c.Input.Seq[c.Input.Cursor])
+			c.Input.Cursor++
+		case OUT:
+			c.Output = append(c.Output, c.Read(1))
+		case NON_ZERO:
+			if c.Read(1) != 0 {
+				c.Cursor = c.Read(2)
+				c.disablePostInc = true
+			}
+		case ZERO:
+			if c.Read(1) == 0 {
+				c.Cursor = c.Read(2)
+				c.disablePostInc = true
+			}
+		case LT:
+			c.SetIf(3, c.Read(1) < c.Read(2))
+		case EQ:
+			c.SetIf(3, c.Read(1) == c.Read(2))
 		case EOF:
 			return c
 		default:
 			panic("unhandled")
 		}
-
-		if c.Debug {
-			fmt.Println("equal", c.Value(target))
+		if !c.disablePostInc {
+			c.Cursor += knownOpcodes[c.opcode].ParamCount
+		} else {
+			c.disablePostInc = false
 		}
-		c.Cursor += 4
 	}
 }
 
-func (c *IntCode) Value(i int) int {
-	v, exist := c.Memory[i]
+// Value reads the immediate value at address addr.
+func (c *IntCode) Value(addr int) int {
+	v, exist := c.Memory[addr]
 	if !exist && !c.IgnoreNonAddressedMemory {
-		panic(fmt.Errorf("error reading value at address %d: does not exist", i))
+		fmt.Println(c.Output)
+		panic(fmt.Errorf("error reading value at address %d: does not exist", addr))
 	}
 	return v
 }
 
+// Address reads the address value at position addr.
+func (c *IntCode) Address(addr int) int {
+	v, exist := c.Memory[c.Value(addr)]
+	if !exist && !c.IgnoreNonAddressedMemory {
+		fmt.Println(c.Output)
+		panic(fmt.Errorf("error reading address at address %d from: does not exist", c.Value(addr), addr))
+	}
+	return v
+}
+
+// SetValue sets the given value into the address value at position addr.
 func (c *IntCode) SetValue(addr, value int) {
 	c.Memory[addr] = value
 }
 
+// SetAddress sets the given value into the address addr.
 func (c *IntCode) SetAddress(addr, value int) {
 	c.SetValue(c.Value(addr), value)
 }
 
-func (c *IntCode) Address(i int) int {
-	v, exist := c.Memory[c.Value(i)]
-	if !exist && !c.IgnoreNonAddressedMemory {
-		panic(fmt.Errorf("error reading address at address %d: does not exist", i))
+func (c *IntCode) SetIf(offset int, cond bool) {
+	if cond {
+		c.Write(offset, 1)
+	} else {
+		c.Write(offset, 0)
 	}
-	return v
 }
-func (c *IntCode) String() string {
-	s := ""
-	i := 0
-	for {
-		v, exist := c.Memory[i]
-		if !exist {
-			break
-		}
-		s += fmt.Sprint(v, ",")
-		i++
+
+func (c *IntCode) Write(offset, value int) {
+	//if ParameterMode(mode) == ModeImmediate {
+	//	c.SetValue(c.Cursor+offset, value)
+	//	return
+	//}
+	c.SetAddress(c.Cursor+offset, value)
+}
+
+func (c *IntCode) Read(offset int) int {
+	if ParameterMode(c.modes[offset-1]) == ModeImmediate {
+		return c.Value(c.Cursor + offset)
 	}
-	s = s[:len(s)-1]
-	s += fmt.Sprintf("\nCur: %d", c.Cursor)
-	return s
+	return c.Address(c.Cursor + offset)
+}
+
+func readInstruction(intructionCommand int) (opcode int, modes []int) {
+	opcode = intructionCommand % 100
+	for j := 100; j <= int(math.Pow10(knownOpcodes[opcode].ParamCount)); j *= 10 {
+		modes = append(modes, (intructionCommand/j)%10)
+	}
+	return
 }
