@@ -136,7 +136,7 @@ func (c *IntCode) Address(addr int) int {
 	v, exist := c.Memory[c.Value(addr)]
 	if !exist && !c.IgnoreNonAddressedMemory {
 		fmt.Println(c.Output)
-		panic(fmt.Errorf("error reading address at address %d from: does not exist", c.Value(addr), addr))
+		panic(fmt.Errorf("error reading address at address %d from %d: does not exist", c.Value(addr), addr))
 	}
 	return v
 }
