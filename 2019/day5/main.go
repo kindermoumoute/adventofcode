@@ -14,13 +14,11 @@ func run(input string) (string, string) {
 
 	seq := []int{1}
 	c := intcode.New(intcodeInput, 0, seq...)
-	c.Run()
-	part1 := strconv.Itoa(c.Output[len(c.Output)-1])
+	part1 := strconv.Itoa(c.Run())
 
 	seq = []int{5}
 	c = intcode.New(intcodeInput, 0, seq...)
-	c.Run()
-	part2 := strconv.Itoa(c.Output[len(c.Output)-1])
+	part2 := strconv.Itoa(c.Run())
 
 	return part1, part2
 }
