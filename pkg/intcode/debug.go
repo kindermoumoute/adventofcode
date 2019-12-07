@@ -25,7 +25,7 @@ func (c *IntCode) printDebug() {
 	for i := 1; i < knownOpcodes[c.opcode].ParamCount; i++ {
 		params = append(params, c.debugParam(c.Cursor+i, c.modes[i-1]))
 	}
-	fmt.Printf("PROGRAM %s: %s %s\n", c.Name, knownOpcodes[c.opcode].Word, strings.Join(params, " "))
+	c.infof("%s %s", knownOpcodes[c.opcode].Word, strings.Join(params, " "))
 }
 
 func (c *IntCode) debugParam(addr, mode int) string {
@@ -49,4 +49,17 @@ func (c *IntCode) String() string {
 	s = s[:len(s)-1]
 	s += fmt.Sprintf("\nCur: %d", c.Cursor)
 	return s
+}
+
+func (c *IntCode) logDebug() {
+
+}
+
+func (c *IntCode) infof(s string, a ...interface{}) {
+	if c.DebugMode != DebugNone {
+		if c.Name != "" {
+			s = "PROGRAM " + c.Name + ": " + s
+		}
+		fmt.Printf(strings.TrimRight(s, "\n")+"\n", a...)
+	}
 }

@@ -131,9 +131,7 @@ func (c *IntCode) Run() int {
 }
 
 func (c *IntCode) ReadInput() int {
-	if c.DebugMode != DebugNone {
-		fmt.Printf("PROGRAM %s: start reading", c.Name)
-	}
+	c.infof("\tstart reading")
 	var in int
 	if len(c.Input.Buff) > 0 { // read from input buffer first
 		in = c.Input.Buff[0]
@@ -141,9 +139,7 @@ func (c *IntCode) ReadInput() int {
 	} else {
 		in = <-c.Input.C
 	}
-	if c.DebugMode != DebugNone {
-		fmt.Printf("PROGRAM %s: reads %d", c.Name, in)
-	}
+	c.infof("\treads %d", in)
 	return in
 }
 
@@ -151,13 +147,9 @@ func (c *IntCode) WriteOutput(out int) {
 	c.Output.Buff = append(c.Output.Buff, out)
 	if c.Output.C != nil {
 		go func() {
-			if c.DebugMode != DebugNone {
-				fmt.Printf("PROGRAM %s: start writing", c.Name)
-			}
+			c.infof("\tstart writing")
 			c.Output.C <- out
-			if c.DebugMode != DebugNone {
-				fmt.Printf("PROGRAM %s: writes %d", c.Name, out)
-			}
+			c.infof("\twrites %d", out)
 		}()
 	}
 }
