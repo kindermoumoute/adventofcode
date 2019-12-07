@@ -85,9 +85,9 @@ func (p *HexaP) TurnRight() {
 }
 
 func (p *HexaP) DistFromOrigin() int {
-	return p.DistFrom(&P{X: 0, Y: 0})
+	return p.DistFrom(&HexaP{X: 0, Y: 0})
 }
 
-func (p *HexaP) DistFrom(from *P) int {
+func (p *HexaP) DistFrom(from *HexaP) int {
 	return HexaDist(p.X-from.X, p.Y-from.Y)
 }

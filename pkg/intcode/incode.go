@@ -45,12 +45,13 @@ const (
 )
 
 type IntCode struct {
+	Name                     string
 	Memory                   map[int]int
 	Cursor                   int
 	IgnoreNonAddressedMemory bool
 	DebugMode                DebugMode
-	Input                    Input
-	Output                   []int
+	Input                    ReadWriter
+	Output                   ReadWriter
 
 	//
 	disablePostInc bool
@@ -58,9 +59,9 @@ type IntCode struct {
 	modes          []int
 }
 
-type Input struct {
-	Seq    []int
-	Cursor int
+type ReadWriter struct {
+	C    chan int
+	Buff []int
 }
 
 // New copy the intcode memory before creating a new IntCode object.
@@ -68,18 +69,27 @@ func New(memory map[int]int, cursorStart int, seq ...int) *IntCode {
 	intCode := &IntCode{
 		Memory: map[int]int{},
 		Cursor: cursorStart,
-		Input: Input{
-			Seq: seq,
+		Input: ReadWriter{
+			C:    make(chan int),
+			Buff: seq,
 		},
 	}
+
 	for k, v := range memory {
 		intCode.Memory[k] = v
 	}
 	return intCode
 }
 
+// RunBackground runs in a go func.
+func (c *IntCode) RunBackground() {
+	go func() {
+		c.Run()
+	}()
+}
+
 // Run the IntCode program.
-func (c *IntCode) Run() *IntCode {
+func (c *IntCode) Run() int {
 	for {
 		c.opcode, c.modes = readInstruction(c.Memory[c.Cursor])
 		c.printDebug()
@@ -90,10 +100,9 @@ func (c *IntCode) Run() *IntCode {
 		case MUL:
 			c.Write(3, c.Read(1)*c.Read(2))
 		case IN:
-			c.Write(1, c.Input.Seq[c.Input.Cursor])
-			c.Input.Cursor++
+			c.Write(1, c.ReadInput())
 		case OUT:
-			c.Output = append(c.Output, c.Read(1))
+			c.WriteOutput(c.Read(1))
 		case NON_ZERO:
 			if c.Read(1) != 0 {
 				c.Cursor = c.Read(2)
@@ -109,15 +118,47 @@ func (c *IntCode) Run() *IntCode {
 		case EQ:
 			c.SetIf(3, c.Read(1) == c.Read(2))
 		case EOF:
-			return c
+			return c.Output.Buff[len(c.Output.Buff)-1]
 		default:
-			panic("unhandled")
+			panic(fmt.Errorf("PROGRAM %s: %v unhandled", c.Name, c.opcode))
 		}
 		if !c.disablePostInc {
 			c.Cursor += knownOpcodes[c.opcode].ParamCount
 		} else {
 			c.disablePostInc = false
 		}
+	}
+}
+
+func (c *IntCode) ReadInput() int {
+	if c.DebugMode != DebugNone {
+		fmt.Printf("PROGRAM %s: start reading", c.Name)
+	}
+	var in int
+	if len(c.Input.Buff) > 0 { // read from input buffer first
+		in = c.Input.Buff[0]
+		c.Input.Buff = c.Input.Buff[1:]
+	} else {
+		in = <-c.Input.C
+	}
+	if c.DebugMode != DebugNone {
+		fmt.Printf("PROGRAM %s: reads %d", c.Name, in)
+	}
+	return in
+}
+
+func (c *IntCode) WriteOutput(out int) {
+	c.Output.Buff = append(c.Output.Buff, out)
+	if c.Output.C != nil {
+		go func() {
+			if c.DebugMode != DebugNone {
+				fmt.Printf("PROGRAM %s: start writing", c.Name)
+			}
+			c.Output.C <- out
+			if c.DebugMode != DebugNone {
+				fmt.Printf("PROGRAM %s: writes %d", c.Name, out)
+			}
+		}()
 	}
 }
 
