@@ -35,21 +35,14 @@ func run(input string) (string, string) {
 	for p, v := range crossMap {
 		if v == 3 {
 			crossedPoints = append(crossedPoints, p)
-			newMin := p.DistFromOrigin()
-			if newMin < part1 {
-				part1 = newMin
-			}
+			part1 = pkg.Min(part1, p.DistFromOrigin())
 		}
 	}
 
 	// fewest steps to cross point
 	part2 := 9999999999999999
 	for _, p := range crossedPoints {
-		score := stepsMap[0][p] + stepsMap[1][p]
-
-		if score < part2 {
-			part2 = score
-		}
+		part2 = pkg.Min(part2, stepsMap[0][p]+stepsMap[1][p])
 	}
 
 	return strconv.Itoa(part1), strconv.Itoa(part2)

@@ -74,9 +74,7 @@ func (n *Node) findSAN(currentDist int) (int, bool) {
 	for _, l := range n.Leaf {
 		dist, found := l.findSAN(currentDist + 1)
 		if found {
-			if dist < min {
-				min = dist
-			}
+			min = pkg.Min(min, dist)
 		}
 	}
 	return min, true

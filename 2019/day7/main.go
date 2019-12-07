@@ -3,9 +3,8 @@ package main
 import (
 	"strconv"
 
-	"github.com/kindermoumoute/adventofcode/pkg/intcode"
-
 	"github.com/kindermoumoute/adventofcode/pkg"
+	"github.com/kindermoumoute/adventofcode/pkg/intcode"
 )
 
 // returns part1 and part2
@@ -55,10 +54,7 @@ func RunPart2(settings []string, intList map[int]int) int {
 		// run
 		for i, c := range programs {
 			if i == len(programs)-1 {
-				outputCode := c.Run()
-				if outputCode > max {
-					max = outputCode
-				}
+				max = pkg.Max(c.Run(), max)
 			} else {
 				c.RunBackground()
 			}
