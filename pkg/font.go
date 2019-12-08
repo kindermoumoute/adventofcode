@@ -9,6 +9,8 @@ const (
 
 type Letter [5]byte
 
+// tested letters: ABCEFGHJKLPRUYZ
+
 var (
 	LetterA = Letter{0x3E, 0x09, 0x09, 0x3E} //A
 	LetterB = Letter{0x3F, 0x25, 0x25, 0x1A}
@@ -64,14 +66,9 @@ var (
 		LetterX: "X",
 		LetterY: "Y",
 		LetterZ: "Z",
-		LetterA: "A",
-		LetterA: "A",
 	}
 )
 
-// top left is i=0,j=0
-// top right is i=3,j=0
-// bot right is i=3,j=7
 func (l *Letter) SetColor(i, j int) {
 	l[i] |= 1 << j
 }
