@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/kindermoumoute/adventofcode/pkg"
@@ -30,14 +29,14 @@ func run(input string) (string, string) {
 
 	}
 
+	screen := []int(nil)
 	for j := range bs[0] {
-		if j%25 == 0 {
-			fmt.Println()
-		}
-		fmt.Print(render[j], " ")
+		screen = append(screen, int(render[j]))
 	}
-	fmt.Println()
-	return strconv.Itoa(layers[minI][1] * layers[minI][2]), ""
+
+	word := pkg.NewWordFromScreen(screen, 25, 1)
+
+	return strconv.Itoa(layers[minI][1] * layers[minI][2]), word.String()
 }
 
 func parse(s string) [][]byte {
@@ -55,5 +54,5 @@ func parse(s string) [][]byte {
 }
 
 func main() {
-	pkg.Execute(run, nil, puzzle, true)
+	pkg.Execute(run, tests, puzzle, true)
 }
