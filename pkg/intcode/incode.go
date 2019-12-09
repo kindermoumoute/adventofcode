@@ -15,6 +15,7 @@ const (
 	ZERO
 	LT
 	EQ
+	REL
 	// don't forget to add new opcodes in knownOpcodes
 
 	EOF = 99
@@ -34,6 +35,7 @@ var (
 		ZERO:     {"JUMP IF ZERO", 3},
 		LT:       {"IS LOWER THAN", 4},
 		EQ:       {"IS EQUAL", 4},
+		REL:      {"RELATIVE MODE", 2},
 	}
 )
 
@@ -42,6 +44,7 @@ type ParameterMode int
 const (
 	ModePosition = ParameterMode(iota)
 	ModeImmediate
+	ModeRelative
 )
 
 type IntCode struct {
@@ -57,6 +60,7 @@ type IntCode struct {
 	disablePostInc bool
 	opcode         int
 	modes          []int
+	RelativeOffset int
 }
 
 type ReadWriter struct {
@@ -117,6 +121,8 @@ func (c *IntCode) Run() int {
 			c.SetIf(3, c.Read(1) < c.Read(2))
 		case EQ:
 			c.SetIf(3, c.Read(1) == c.Read(2))
+		case REL:
+			c.RelativeOffset += c.Read(1)
 		case EOF:
 			return c.Output.Buff[len(c.Output.Buff)-1]
 		default:
@@ -193,18 +199,24 @@ func (c *IntCode) SetIf(offset int, cond bool) {
 }
 
 func (c *IntCode) Write(offset, value int) {
-	//if ParameterMode(mode) == ModeImmediate {
-	//	c.SetValue(c.Cursor+offset, value)
-	//	return
-	//}
+	if ParameterMode(c.modes[offset-1]) == ModeRelative {
+		c.SetValue(c.Value(c.Cursor+offset)+c.RelativeOffset, value)
+		return
+	}
 	c.SetAddress(c.Cursor+offset, value)
 }
 
 func (c *IntCode) Read(offset int) int {
-	if ParameterMode(c.modes[offset-1]) == ModeImmediate {
+	switch ParameterMode(c.modes[offset-1]) {
+	case ModePosition:
+		return c.Address(c.Cursor + offset)
+	case ModeRelative:
+		return c.Value(c.Value(c.Cursor+offset) + c.RelativeOffset)
+	case ModeImmediate:
 		return c.Value(c.Cursor + offset)
 	}
-	return c.Address(c.Cursor + offset)
+	panic(fmt.Errorf("unhandled mode %d", ParameterMode(c.modes[offset-1])))
+
 }
 
 func readInstruction(intructionCommand int) (opcode int, modes []int) {

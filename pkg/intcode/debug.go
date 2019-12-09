@@ -19,6 +19,7 @@ func (c *IntCode) printDebug() {
 	}
 	if c.DebugMode == DebugVerbose {
 		fmt.Println(c.String())
+		fmt.Println(c.Output.Buff)
 	}
 
 	params := []string(nil)
@@ -29,10 +30,16 @@ func (c *IntCode) printDebug() {
 }
 
 func (c *IntCode) debugParam(addr, mode int) string {
-	if ParameterMode(mode) == ModeImmediate {
+	switch ParameterMode(mode) {
+	case ModeImmediate:
 		return fmt.Sprintf("%d", c.Value(addr))
+	case ModeRelative:
+		return fmt.Sprintf("%d[%d+%d]", c.Address(addr), c.Value(addr), c.RelativeOffset)
+	case ModePosition:
+		return fmt.Sprintf("%d[%d]", c.Address(addr), c.Value(addr))
 	}
-	return fmt.Sprintf("%d[%d]", c.Address(addr), c.Value(addr))
+	panic("invalid mode")
+
 }
 
 func (c *IntCode) String() string {
