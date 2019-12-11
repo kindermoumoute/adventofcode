@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"fmt"
-	"math"
 )
 
 const (
@@ -78,13 +77,6 @@ func (p *P) DistFrom(from *P) int {
 	return Abs(p.X-from.X) + Abs(p.Y-from.Y)
 }
 
-func (p *P) EuclideanDistFrom(from *P) float64 {
-	return math.Sqrt(float64(p.DistFrom(from)))
-}
-
-func (p *P) EuclideanDistFromOrigin() float64 {
-	return math.Sqrt(float64(p.DistFromOrigin()))
-}
 func (p *P) FindInMap(stringMap [][]string, origin P) string {
 	newY := origin.Y - p.Y
 	if newY >= len(stringMap) || newY < 0 {
