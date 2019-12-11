@@ -11,9 +11,10 @@ type TestCase struct {
 	Input, ExpectedPart1, ExpectedPart2 string
 }
 
-func (t TestCases) Run(fn func(string) (string, string), hideInput bool) {
+func (t TestCases) Run(fn func(string) (interface{}, interface{}), hideInput bool) {
 	for _, test := range t {
-		part1, part2 := fn(test.Input)
+		part1I, part2I := fn(test.Input)
+		part1, part2 := fmt.Sprint(part1I), fmt.Sprint(part2I)
 		passedPart1 := part1 == test.ExpectedPart1 || test.ExpectedPart1 == ""
 		passedPart2 := part2 == test.ExpectedPart2 || test.ExpectedPart2 == ""
 		passed := passedPart1 && passedPart2

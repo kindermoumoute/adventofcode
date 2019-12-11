@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	lowest := 0
 dance:
 	for ; ; lowest++ {

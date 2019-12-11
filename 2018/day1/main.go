@@ -8,7 +8,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	// part1
 	list := pkg.ParseIntList(input, "\n")
 	part1 := strconv.Itoa(pkg.Sum(list...))

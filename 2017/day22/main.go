@@ -7,7 +7,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	grid := parse(input)
 	ection := 0
 	part1 := 0

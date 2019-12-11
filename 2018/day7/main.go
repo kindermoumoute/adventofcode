@@ -153,7 +153,7 @@ func (r *Node) Part1() []string {
 }
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	connections := parse(input)
 
 	nodeIDs := make(map[string]*Node)

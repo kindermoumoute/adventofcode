@@ -14,7 +14,7 @@ type Registers struct {
 }
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	instructions, insPointer := parse(input)
 	part1 := 0
 	for i := 0; i < 2; i++ {

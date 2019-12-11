@@ -26,7 +26,7 @@ func (r *Region) Type() int {
 }
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	depth, target := parse(input)
 	cave := make(map[pkg.P]*Region)
 	part1 := 0

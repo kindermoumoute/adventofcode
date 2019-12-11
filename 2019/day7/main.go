@@ -8,7 +8,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	intList := pkg.ParseIntMap(input, ",")
 	part1 := RunPart1(pkg.GetAllPermutations("01234"), intList)
 	part2 := RunPart2(pkg.GetAllPermutations("98765"), intList)

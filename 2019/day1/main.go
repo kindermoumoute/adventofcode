@@ -7,7 +7,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	part1, part2 := 0, 0
 	for _, fuelValue := range pkg.ParseIntList(input, "\n") {
 		part1 += fuelValue/3 - 2

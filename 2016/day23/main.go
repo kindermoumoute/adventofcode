@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	c := parse(input)
 	c.register["a"] = 12
 	for i := 0; i < len(c.instruction); i++ {

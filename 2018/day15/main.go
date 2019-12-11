@@ -12,7 +12,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	d15 := parse(input)
 	part1, winnerRace, winnerCount := d15.part1()
 	part2 := part1

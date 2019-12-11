@@ -15,7 +15,7 @@ type val struct {
 	ue int
 }
 
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	c := computer{0, []program{0: parse(input), 1: parse(input)}}
 	for t := range c.p {
 		p := c.p[t]

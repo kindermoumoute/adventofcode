@@ -8,7 +8,7 @@ import (
 
 var Salt = []int{17, 31, 73, 47, 23}
 
-func Run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	part1Input := []int{}
 	for _, number := range strings.Split(input, ",") {
 		n, _ := strconv.Atoi(number)
@@ -66,7 +66,7 @@ func knotHash(list, puzzle []int, pos, skipSize int) (int, int) {
 
 func main() {
 	for _, test := range tests {
-		part1, part2 := Run(test.input)
+		part1, part2 := run(test.input)
 		if part1 != test.expectedPart1 {
 			fmt.Println("Input ", test.input, " - PART1: ", part1, " but expected ", test.expectedPart1)
 			return
@@ -76,5 +76,5 @@ func main() {
 			return
 		}
 	}
-	fmt.Println(Run(puzzle))
+	fmt.Println(run(puzzle))
 }

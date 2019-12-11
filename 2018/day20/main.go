@@ -10,7 +10,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	path := []byte(input)
 	stack := make([]pkg.P, 1, 10)
 	i := 0

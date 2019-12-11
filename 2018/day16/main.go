@@ -9,7 +9,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	var r = &Registers{r: make([]int, 4)}
 	var Ops = []func(int, int, int){r.eqri, r.banr, r.bori, r.mulr, r.seti, r.bani, r.muli, r.gtrr, r.setr, r.addi, r.gtir, r.borr, r.addr, r.eqrr, r.gtri, r.eqir}
 	part1, part2 := parse(input)

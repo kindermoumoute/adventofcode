@@ -8,7 +8,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	a, b := parse(input)
 	part1, part2 := 0, 0
 	for i := a; i <= b; i++ {

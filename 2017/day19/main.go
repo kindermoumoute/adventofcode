@@ -21,7 +21,7 @@ var (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	p := parse(input)
 	part1 := []byte{}
 	part2 := 0

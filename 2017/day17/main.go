@@ -10,7 +10,7 @@ type cBuffer struct {
 	pos    int
 }
 
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	forwardSteps := parse(input)
 	buf := cBuffer{buffer: []int{0}, pos: 0}
 	part1, part2 := -1, -1

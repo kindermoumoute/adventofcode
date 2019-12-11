@@ -16,7 +16,7 @@ const (
 var part1 = ""
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	track, carts := parse(input)
 	alive := len(carts)
 	for {

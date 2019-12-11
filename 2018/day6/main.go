@@ -10,7 +10,7 @@ import (
 )
 
 // returns part1 and part2
-func run(input string) (string, string) {
+func run(input string) (interface{}, interface{}) {
 	part2Limit := 10000
 	if input != puzzle {
 		part2Limit = 32
