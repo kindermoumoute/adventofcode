@@ -55,8 +55,8 @@ type IntCode struct {
 	DebugMode                DebugMode
 	Input                    ReadWriter
 	Output                   ReadWriter
+	Done                     chan bool
 
-	//
 	disablePostInc bool
 	opcode         int
 	modes          []int
@@ -77,6 +77,7 @@ func New(memory map[int]int, cursorStart int, seq ...int) *IntCode {
 			C:    make(chan int),
 			Buff: seq,
 		},
+		Done: make(chan bool),
 	}
 
 	for k, v := range memory {
@@ -124,6 +125,9 @@ func (c *IntCode) Run() int {
 		case REL:
 			c.RelativeOffset += c.Read(1)
 		case EOF:
+			close(c.Output.C)
+			c.Done <- true
+			close(c.Done)
 			return c.Output.Buff[len(c.Output.Buff)-1]
 		default:
 			panic(fmt.Errorf("PROGRAM %s: %v unhandled", c.Name, c.opcode))
@@ -152,11 +156,9 @@ func (c *IntCode) ReadInput() int {
 func (c *IntCode) WriteOutput(out int) {
 	c.Output.Buff = append(c.Output.Buff, out)
 	if c.Output.C != nil {
-		go func() {
-			c.infof("\tstart writing")
-			c.Output.C <- out
-			c.infof("\twrites %d", out)
-		}()
+		c.infof("\tstart writing")
+		c.Output.C <- out
+		c.infof("\twrites %d", out)
 	}
 }
 
