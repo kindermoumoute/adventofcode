@@ -3,6 +3,8 @@ package main
 import (
 	"strconv"
 
+	"github.com/kindermoumoute/adventofcode/pkg/font"
+
 	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
@@ -34,7 +36,7 @@ func run(input string) (interface{}, interface{}) {
 		screen = append(screen, int(render[j]))
 	}
 
-	word := pkg.NewWordFromScreen(screen, 25, 1)
+	word := font.NewWordFromScreen(screen, 25, 1)
 
 	return strconv.Itoa(layers[minI][1] * layers[minI][2]), word.String()
 }
