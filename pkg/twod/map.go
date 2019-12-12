@@ -1,6 +1,7 @@
 package twod
 
 import (
+	"math"
 	"sort"
 	"strings"
 )
@@ -27,6 +28,42 @@ func (m Map) Clone() Map {
 		clone[k] = v
 	}
 	return clone
+}
+
+func (m Map) RotateLeft() Map {
+	clone := make(Map)
+	for k, v := range m {
+		clone[k.Rotate(math.Pi/2)] = v
+	}
+	return clone
+}
+
+func (m Map) RotateRight() Map {
+	clone := make(Map)
+	for k, v := range m {
+		clone[k.Rotate(-math.Pi/2)] = v
+	}
+	return clone
+}
+
+func (m Map) Translate(move Vector) Map {
+	clone := make(Map)
+	for k, v := range m {
+		clone[k+move] = v
+	}
+	return clone
+}
+
+func (m Map) InvertY() Map {
+	clone := make(Map)
+	for k, v := range m {
+		clone[NewVector(k.X(), -k.Y())] = v
+	}
+	return clone
+}
+
+func (m Map) Center(matches ...interface{}) Map {
+	return m.Translate(-m.FindTopLeft(matches...))
 }
 
 func (m Map) ToSlice() []Vector {
@@ -70,4 +107,56 @@ func (m Map) Find(match interface{}) []Vector {
 		}
 	}
 	return founds
+}
+
+// FindTopLeft returns a point that represent the top left corner of a squared map only composed of the match values.
+// This point might not exist on the actual map.
+func (m Map) FindTopLeft(matches ...interface{}) Vector {
+	minX, minY := 0, 0
+	xSet, ySet := false, false
+	for k, v := range m {
+		if hasMatch(v, matches) {
+			if !xSet || k.X() < minX {
+				xSet = true
+				minX = k.X()
+			}
+			if !ySet || k.Y() < minY {
+				ySet = true
+				minY = k.Y()
+			}
+		}
+	}
+	return NewVector(minX, minY)
+}
+
+// FindBottomRight returns a point that represent the bottom right corner of a squared map only composed of the match values.
+// This point might not exist on the actual map.
+func (m Map) FindBottomRight(matches ...interface{}) Vector {
+	maxX, maxY := 0, 0
+	xSet, ySet := false, false
+	for k, v := range m {
+		if hasMatch(v, matches) {
+			if !xSet || maxX < k.X() {
+				xSet = true
+				maxX = k.X()
+			}
+			if !ySet || maxY < k.Y() {
+				ySet = true
+				maxY = k.Y()
+			}
+		}
+	}
+	return NewVector(maxX, maxY)
+}
+
+func hasMatch(v interface{}, matches []interface{}) bool {
+	if len(matches) == 0 {
+		return true
+	}
+	for _, match := range matches {
+		if v == match {
+			return true
+		}
+	}
+	return false
 }

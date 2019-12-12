@@ -31,7 +31,7 @@ func run(input string) (interface{}, interface{}) {
 
 	}
 
-	screen := []int(nil)
+	screen := []interface{}(nil)
 	for j := range bs[0] {
 		screen = append(screen, int(render[j]))
 	}
