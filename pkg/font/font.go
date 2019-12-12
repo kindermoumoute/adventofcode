@@ -99,8 +99,8 @@ func debugLetter(l Letter) string {
 
 type Word []Letter
 
-// screen is a slice of 1 and 0
-// blackColor is the color black (0 or 1)
+// NewWordFromScreen draw the word from every element matching pixelValue.
+// Screen is a slice of interface{} value
 func NewWordFromScreen(screen []interface{}, wide int, pixelValue interface{}) Word {
 	letterCount := wide / letterWidth
 	letters := make(Word, letterCount)
@@ -112,7 +112,7 @@ func NewWordFromScreen(screen []interface{}, wide int, pixelValue interface{}) W
 	return letters
 }
 
-// screen is a slice of whatever value. Every element matching pixelValue will be drawn
+// FindWordInMap will rotate and inverse the map in every way until it find a valid drawn word.
 func FindWordInMap(screen twod.Map, pixelValue interface{}) (Word, error) {
 	var multiErr error
 	for i := 0; i < 8; i++ {
@@ -120,6 +120,7 @@ func FindWordInMap(screen twod.Map, pixelValue interface{}) (Word, error) {
 		botR := screen.FindBottomRight(pixelValue)
 		width := botR.X() + 2 // column 0 must be counted in the width + add add a blank column at the end
 		letters := make(Word, width/letterWidth)
+		// TODO: multiline words
 		for k, v := range screen {
 			if v == pixelValue {
 				letterIndex := ((k.Y()*width + k.X()) / letterWidth) % len(letters)
@@ -132,9 +133,9 @@ func FindWordInMap(screen twod.Map, pixelValue interface{}) (Word, error) {
 		}
 		multiErr = multierror.Append(err, multiErr)
 		if i%2 == 0 {
-			screen = screen.InvertY()
+			screen = screen.InvertY() // try every inversion
 		} else {
-			screen = screen.RotateRight() // try every rotation of the screen
+			screen = screen.RotateRight() // try every rotation
 		}
 	}
 	return nil, multiErr
