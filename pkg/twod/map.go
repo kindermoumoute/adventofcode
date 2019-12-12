@@ -30,6 +30,16 @@ func (m Map) Clone() Map {
 	return clone
 }
 
+func (m Map) Filter(matches ...interface{}) Map {
+	clone := make(Map)
+	for k, v := range m {
+		if hasMatch(v, matches) {
+			clone[k] = v
+		}
+	}
+	return clone
+}
+
 func (m Map) RotateLeft() Map {
 	clone := make(Map)
 	for k, v := range m {
@@ -62,8 +72,8 @@ func (m Map) InvertY() Map {
 	return clone
 }
 
-func (m Map) Center(matches ...interface{}) Map {
-	return m.Translate(-m.FindTopLeft(matches...))
+func (m Map) Center() Map {
+	return m.Translate(-m.FindTopLeft())
 }
 
 func (m Map) ToSlice() []Vector {
@@ -98,11 +108,11 @@ func (m Map) SortValuesByDist(from Vector) []interface{} {
 	return sortedValues
 }
 
-func (m Map) Find(match interface{}) []Vector {
+func (m Map) Find(matches ...interface{}) []Vector {
 	sorted := m.SortByDist(0)
 	founds := []Vector(nil)
 	for _, k := range sorted {
-		if m[k] == match {
+		if hasMatch(m[k], matches) {
 			founds = append(founds, k)
 		}
 	}
@@ -111,19 +121,17 @@ func (m Map) Find(match interface{}) []Vector {
 
 // FindTopLeft returns a point that represent the top left corner of a squared map only composed of the match values.
 // This point might not exist on the actual map.
-func (m Map) FindTopLeft(matches ...interface{}) Vector {
+func (m Map) FindTopLeft() Vector {
 	minX, minY := 0, 0
 	xSet, ySet := false, false
-	for k, v := range m {
-		if hasMatch(v, matches) {
-			if !xSet || k.X() < minX {
-				xSet = true
-				minX = k.X()
-			}
-			if !ySet || k.Y() < minY {
-				ySet = true
-				minY = k.Y()
-			}
+	for k := range m {
+		if !xSet || k.X() < minX {
+			xSet = true
+			minX = k.X()
+		}
+		if !ySet || k.Y() < minY {
+			ySet = true
+			minY = k.Y()
 		}
 	}
 	return NewVector(minX, minY)
@@ -131,19 +139,17 @@ func (m Map) FindTopLeft(matches ...interface{}) Vector {
 
 // FindBottomRight returns a point that represent the bottom right corner of a squared map only composed of the match values.
 // This point might not exist on the actual map.
-func (m Map) FindBottomRight(matches ...interface{}) Vector {
+func (m Map) FindBottomRight() Vector {
 	maxX, maxY := 0, 0
 	xSet, ySet := false, false
-	for k, v := range m {
-		if hasMatch(v, matches) {
-			if !xSet || maxX < k.X() {
-				xSet = true
-				maxX = k.X()
-			}
-			if !ySet || maxY < k.Y() {
-				ySet = true
-				maxY = k.Y()
-			}
+	for k := range m {
+		if !xSet || maxX < k.X() {
+			xSet = true
+			maxX = k.X()
+		}
+		if !ySet || maxY < k.Y() {
+			ySet = true
+			maxY = k.Y()
 		}
 	}
 	return NewVector(maxX, maxY)

@@ -16,8 +16,8 @@ import (
 func run(input string) (interface{}, interface{}) {
 	intList := pkg.ParseIntMap(input, ",")
 	part1 := len(drawMap(intList, 0))
-	drawing := drawMap(intList, 1)
-	word, err := font.FindWordInMap(drawing, 1)
+	drawing := drawMap(intList, 1).Filter(1)
+	word, err := font.FindWordInMap(drawing)
 	if err != nil {
 		panic(err)
 	}

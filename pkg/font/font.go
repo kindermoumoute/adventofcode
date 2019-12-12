@@ -113,19 +113,17 @@ func NewWordFromScreen(screen []interface{}, wide int, pixelValue interface{}) W
 }
 
 // FindWordInMap will rotate and inverse the map in every way until it find a valid drawn word.
-func FindWordInMap(screen twod.Map, pixelValue interface{}) (Word, error) {
+func FindWordInMap(screen twod.Map) (Word, error) {
 	var multiErr error
 	for i := 0; i < 8; i++ {
-		screen = screen.Center(pixelValue)
-		botR := screen.FindBottomRight(pixelValue)
+		screen = screen.Center()
+		botR := screen.FindBottomRight()
 		width := botR.X() + 2 // column 0 must be counted in the width + add add a blank column at the end
 		letters := make(Word, width/letterWidth)
 		// TODO: multiline words
-		for k, v := range screen {
-			if v == pixelValue {
-				letterIndex := ((k.Y()*width + k.X()) / letterWidth) % len(letters)
-				letters[letterIndex].SetColor(k.X()%letterWidth, k.Y()%letterHeight)
-			}
+		for k := range screen {
+			letterIndex := ((k.Y()*width + k.X()) / letterWidth) % len(letters)
+			letters[letterIndex].SetColor(k.X()%letterWidth, k.Y()%letterHeight)
 		}
 		err := letters.Validate()
 		if err == nil {
