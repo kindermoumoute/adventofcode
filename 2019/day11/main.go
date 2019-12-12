@@ -37,6 +37,7 @@ func drawMap(program map[int]int, input int) twod.Map {
 	c := intcode.New(program, 0, input)
 	c.IgnoreNonAddressedMemory = true
 	c.Output.C = make(chan int)
+	c.Done = make(chan bool)
 	c.RunBackground()
 
 	robot := pkg.NewPoint()

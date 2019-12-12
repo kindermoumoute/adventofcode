@@ -77,7 +77,6 @@ func New(memory map[int]int, cursorStart int, seq ...int) *IntCode {
 			C:    make(chan int),
 			Buff: seq,
 		},
-		Done: make(chan bool),
 	}
 
 	for k, v := range memory {
@@ -125,10 +124,17 @@ func (c *IntCode) Run() int {
 		case REL:
 			c.RelativeOffset += c.Read(1)
 		case EOF:
-			close(c.Output.C)
-			c.Done <- true
-			close(c.Done)
-			return c.Output.Buff[len(c.Output.Buff)-1]
+			if c.Output.C != nil {
+				close(c.Output.C)
+			}
+			if c.Done != nil {
+				c.Done <- true
+				close(c.Done)
+			}
+			if len(c.Output.Buff) > 0 {
+				return c.Output.Buff[len(c.Output.Buff)-1]
+			}
+			return 0
 		default:
 			panic(fmt.Errorf("PROGRAM %s: %v unhandled", c.Name, c.opcode))
 		}
