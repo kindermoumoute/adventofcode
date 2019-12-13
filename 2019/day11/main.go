@@ -14,9 +14,8 @@ import (
 
 // returns part1 and part2
 func run(input string) (interface{}, interface{}) {
-	intList := pkg.ParseIntMap(input, ",")
-	part1 := len(drawMap(intList, 0))
-	drawing := drawMap(intList, 1).Filter(1)
+	part1 := len(drawMap(input, 0))
+	drawing := drawMap(input, 1).Filter(1)
 	word, err := font.FindWordInMap(drawing)
 	if err != nil {
 		panic(err)
@@ -26,30 +25,26 @@ func run(input string) (interface{}, interface{}) {
 }
 
 const (
-	ReadColor     = 0
-	ReadDirection = 1
-
 	Left  = 0
 	Right = 1
 )
 
-func drawMap(program map[int]int, input int) twod.Map {
-	c := intcode.New(program, 0, input)
-	c.IgnoreNonAddressedMemory = true
+func drawMap(program string, firstInput int) twod.Map {
+	c := intcode.New(program, 0, firstInput)
 	c.Output.C = make(chan int)
 	c.Done = make(chan bool)
 	c.RunBackground()
-
-	robot := pkg.NewPoint()
-	robot.CurrentDirection = pkg.UP
+	robot := twod.NewPoint(0, twod.UP)
 	drawing := make(twod.Map)
-	outputType := 0
-	for output := range c.Output.C {
-		switch outputType {
-		case ReadColor:
-			drawing[twod.NewVector(robot.X, robot.Y)] = output
-		case ReadDirection:
-			switch output {
+	for {
+		select {
+		case drawing[robot.Pos] = <-c.Output.C:
+			c.Output.C <- 0 // ack
+
+			direction := <-c.Output.C
+			c.Output.C <- 0 // ack
+
+			switch direction {
 			case Left:
 				robot.TurnLeft()
 			case Right:
@@ -57,21 +52,18 @@ func drawMap(program map[int]int, input int) twod.Map {
 			}
 			robot.Move(1)
 
-			// send current color
-			color, exist := drawing[twod.NewVector(robot.X, robot.Y)]
+		case <-c.Input.C:
+			color, exist := drawing[robot.Pos]
 			if !exist {
 				color = 0
 			}
-			select {
-			case c.Input.C <- color.(int):
-			case <-c.Done:
-			}
+			c.Input.C <- color.(int)
+		case <-c.Done:
+			return drawing
 		}
-		outputType ^= 1
 	}
-	return drawing
 }
 
 func main() {
-	pkg.Execute(run, nil, puzzle, true)
+	pkg.Execute(run, tests, puzzle, true)
 }

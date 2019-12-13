@@ -3,6 +3,8 @@ package intcode
 import (
 	"fmt"
 	"math"
+
+	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
 const (
@@ -55,6 +57,7 @@ type IntCode struct {
 	DebugMode                DebugMode
 	Input                    ReadWriter
 	Output                   ReadWriter
+	OutputLinkedFromInput    bool
 	Done                     chan bool
 
 	disablePostInc bool
@@ -63,23 +66,25 @@ type IntCode struct {
 	RelativeOffset int
 }
 
+// ReadeWriter chan (C) expects a request and a response.
 type ReadWriter struct {
 	C    chan int
 	Buff []int
 }
 
 // New copy the intcode memory before creating a new IntCode object.
-func New(memory map[int]int, cursorStart int, seq ...int) *IntCode {
+func New(puzzle string, cursorStart int, seq ...int) *IntCode {
 	intCode := &IntCode{
-		Memory: map[int]int{},
-		Cursor: cursorStart,
+		Memory:                   map[int]int{},
+		Cursor:                   cursorStart,
+		IgnoreNonAddressedMemory: true,
 		Input: ReadWriter{
 			C:    make(chan int),
 			Buff: seq,
 		},
 	}
 
-	for k, v := range memory {
+	for k, v := range pkg.ParseIntMap(puzzle, ",") {
 		intCode.Memory[k] = v
 	}
 	return intCode
@@ -124,12 +129,12 @@ func (c *IntCode) Run() int {
 		case REL:
 			c.RelativeOffset += c.Read(1)
 		case EOF:
-			if c.Output.C != nil {
-				close(c.Output.C)
-			}
 			if c.Done != nil {
 				c.Done <- true
 				close(c.Done)
+			}
+			if c.Output.C != nil && !c.OutputLinkedFromInput {
+				close(c.Output.C)
 			}
 			if len(c.Output.Buff) > 0 {
 				return c.Output.Buff[len(c.Output.Buff)-1]
@@ -153,17 +158,41 @@ func (c *IntCode) ReadInput() int {
 		in = c.Input.Buff[0]
 		c.Input.Buff = c.Input.Buff[1:]
 	} else {
+
+		if !c.OutputLinkedFromInput {
+			c.infof("\trequest for input")
+			c.Input.C <- 0 // request for input
+			c.infof("\tinput request sent")
+		}
 		in = <-c.Input.C
 	}
 	c.infof("\treads %d", in)
 	return in
 }
 
+func (c *IntCode) IntCodeToIntCodeProtocol(inputC chan int) {
+	c.OutputLinkedFromInput = true
+	c.Output.C = inputC
+}
+
 func (c *IntCode) WriteOutput(out int) {
 	c.Output.Buff = append(c.Output.Buff, out)
+
 	if c.Output.C != nil {
 		c.infof("\tstart writing")
-		c.Output.C <- out
+		if c.OutputLinkedFromInput {
+			go func() {
+				c.Output.C <- out
+				c.infof("\twrote %d", out)
+			}()
+		} else {
+			c.Output.C <- out
+			c.infof("\twrote %d", out)
+
+			<-c.Output.C // ack
+			c.infof("\tack %d", out)
+		}
+
 		c.infof("\twrites %d", out)
 	}
 }

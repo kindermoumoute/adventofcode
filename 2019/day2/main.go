@@ -9,10 +9,9 @@ import (
 
 // returns part1 and part2
 func run(input string) (interface{}, interface{}) {
-	inputMap := pkg.ParseIntMap(input, ",")
 
 	// part 1
-	incCode := intcode.New(inputMap, 0)
+	incCode := intcode.New(input, 0)
 	incCode.Memory[1] = 12
 	incCode.Memory[2] = 2
 	incCode.Run()
@@ -23,7 +22,7 @@ func run(input string) (interface{}, interface{}) {
 dance:
 	for i := 0; i <= 99; i++ {
 		for j := 0; j <= 99; j++ {
-			newIntCode := intcode.New(inputMap, 0)
+			newIntCode := intcode.New(input, 0)
 			newIntCode.Memory[1] = i
 			newIntCode.Memory[2] = j
 			newIntCode.Run()

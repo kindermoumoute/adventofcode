@@ -116,7 +116,9 @@ func NewWordFromScreen(screen []interface{}, wide int, pixelValue interface{}) W
 func FindWordInMap(screen twod.Map) (Word, error) {
 	var multiErr error
 	for i := 0; i < 8; i++ {
-		screen = screen.Center()
+		screen = screen.SetPositive()
+
+		fmt.Println(screen.InvertY().RotateRight())
 		botR := screen.FindBottomRight()
 		width := botR.X() + 2 // column 0 must be counted in the width + add add a blank column at the end
 		letters := make(Word, width/letterWidth)

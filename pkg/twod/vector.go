@@ -52,9 +52,14 @@ func (v Vector) EuclideanDistFromOrigin() float64 {
 
 func (v Vector) Rotate(angle float64) Vector {
 	radius, currentAngle := cmplx.Polar(v.C())
-	return Vector(complex128(cmplx.Rect(radius, currentAngle+angle)))
+	return roundComplex(cmplx.Rect(radius, currentAngle+angle))
 }
 
 func toInt(f float64) int {
 	return int(math.Round(f))
+}
+
+func roundComplex(c complex128) Vector {
+	r, i := real(c), imag(c)
+	return Vector(complex(math.Round(r), math.Round(i)))
 }

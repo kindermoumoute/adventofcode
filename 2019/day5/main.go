@@ -10,14 +10,13 @@ import (
 
 // returns part1 and part2
 func run(input string) (interface{}, interface{}) {
-	intcodeInput := pkg.ParseIntMap(input, ",")
 
 	seq := []int{1}
-	c := intcode.New(intcodeInput, 0, seq...)
+	c := intcode.New(input, 0, seq...)
 	part1 := strconv.Itoa(c.Run())
 
 	seq = []int{5}
-	c = intcode.New(intcodeInput, 0, seq...)
+	c = intcode.New(input, 0, seq...)
 	part2 := strconv.Itoa(c.Run())
 
 	return part1, part2

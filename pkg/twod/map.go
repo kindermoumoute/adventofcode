@@ -1,6 +1,7 @@
 package twod
 
 import (
+	"fmt"
 	"math"
 	"sort"
 	"strings"
@@ -8,15 +9,11 @@ import (
 
 type Map map[Vector]interface{}
 
-func NewBinaryMapFromInput(input string, origin Vector, matches ...interface{}) Map {
+func NewMapFromInput(input string) Map {
 	m := make(Map)
 	for j, line := range strings.Split(input, "\n") {
 		for i, char := range line {
-			for _, match := range matches {
-				if char == match {
-					m[NewVector(i, -j)-origin] = char
-				}
-			}
+			m[NewVector(i, -j)] = char
 		}
 	}
 	return m
@@ -72,8 +69,8 @@ func (m Map) InvertY() Map {
 	return clone
 }
 
-func (m Map) Center() Map {
-	return m.Translate(-m.FindTopLeft())
+func (m Map) SetPositive() Map {
+	return m.Translate(-m.FindBottomLeft())
 }
 
 func (m Map) ToSlice() []Vector {
@@ -122,6 +119,42 @@ func (m Map) Find(matches ...interface{}) []Vector {
 // FindTopLeft returns a point that represent the top left corner of a squared map only composed of the match values.
 // This point might not exist on the actual map.
 func (m Map) FindTopLeft() Vector {
+	minX, maxY := 0, 0
+	xSet, ySet := false, false
+	for k := range m {
+		if !xSet || k.X() < minX {
+			xSet = true
+			minX = k.X()
+		}
+		if !ySet || k.Y() > maxY {
+			ySet = true
+			maxY = k.Y()
+		}
+	}
+	return NewVector(minX, maxY)
+}
+
+// FindTopRight returns a point that represent the top right corner of a squared map only composed of the match values.
+// This point might not exist on the actual map.
+func (m Map) FindTopRight() Vector {
+	maxX, maxY := 0, 0
+	xSet, ySet := false, false
+	for k := range m {
+		if !xSet || k.X() > maxX {
+			xSet = true
+			maxX = k.X()
+		}
+		if !ySet || k.Y() > maxY {
+			ySet = true
+			maxY = k.Y()
+		}
+	}
+	return NewVector(maxX, maxY)
+}
+
+// FindBottomLeft returns a point that represent the bottom left corner of a squared map only composed of the match values.
+// This point might not exist on the actual map.
+func (m Map) FindBottomLeft() Vector {
 	minX, minY := 0, 0
 	xSet, ySet := false, false
 	for k := range m {
@@ -140,19 +173,68 @@ func (m Map) FindTopLeft() Vector {
 // FindBottomRight returns a point that represent the bottom right corner of a squared map only composed of the match values.
 // This point might not exist on the actual map.
 func (m Map) FindBottomRight() Vector {
-	maxX, maxY := 0, 0
+	maxX, minY := 0, 0
 	xSet, ySet := false, false
 	for k := range m {
 		if !xSet || maxX < k.X() {
 			xSet = true
 			maxX = k.X()
 		}
-		if !ySet || maxY < k.Y() {
+		if !ySet || minY > k.Y() {
 			ySet = true
-			maxY = k.Y()
+			minY = k.Y()
 		}
 	}
-	return NewVector(maxX, maxY)
+	return NewVector(maxX, minY)
+}
+
+func (m Map) String() string {
+	topLeft := m.FindTopLeft()
+	botRight := m.FindBottomRight()
+
+	// start with headers
+	s := lineHeaderString(topLeft.X(), botRight.X())
+
+	// display map
+	grad := 0
+	for j := topLeft.Y(); j >= botRight.Y(); j-- {
+		if grad%5 == 0 {
+			s += fmt.Sprintf("%d\t┤", j)
+		} else {
+			s += "\t│"
+		}
+		for i := topLeft.X(); i <= botRight.X(); i++ {
+			v, exist := m[NewVector(i, j)]
+			if exist {
+				s += fmt.Sprint(v)
+			} else {
+				s += " "
+			}
+		}
+		s += "\n"
+		grad++
+	}
+	return s
+}
+
+func lineHeaderString(leftX, rightX int) string {
+	header1 := "\t  "
+	header2 := "\t┌ ─"
+	grad := 0
+	for i := leftX; i <= rightX; i++ {
+		if grad%5 == 0 {
+			n := fmt.Sprint(i)
+			i += len(n) - 1
+			grad += len(n) - 1
+			header1 += n
+			header2 += "┴" + strings.Repeat("─", len(n)-1)
+		} else {
+			header1 += " "
+			header2 += "─"
+		}
+		grad++
+	}
+	return header1 + "\n" + header2 + "\n"
 }
 
 func hasMatch(v interface{}, matches []interface{}) bool {
