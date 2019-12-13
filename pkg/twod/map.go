@@ -9,11 +9,15 @@ import (
 
 type Map map[Vector]interface{}
 
+// NewMapFromInput set every character from the input string into a Map object
+// based on its coordinate. Every vector in the map is positive, which means that
+// the bottom left of the input will be at the origin of the Map.
 func NewMapFromInput(input string) Map {
 	m := make(Map)
-	for j, line := range strings.Split(input, "\n") {
+	lines := strings.Split(input, "\n")
+	for j, line := range lines {
 		for i, char := range line {
-			m[NewVector(i, -j)] = char
+			m[NewVector(i, len(lines)-1-j)] = char
 		}
 	}
 	return m
