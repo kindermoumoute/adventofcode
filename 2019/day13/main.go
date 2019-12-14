@@ -56,8 +56,11 @@ func run(input string) (interface{}, interface{}) {
 			}
 
 		case <-c.Input.C: // input request
-			// if we wanted to print screen, do it here
+			//timer := time.After(time.Millisecond * 50)
 			c.Input.C <- strat(gameMap.Find(bar)[0], gameMap.Find(ball)[0])
+			//<-timer
+
+			//fmt.Printf("\033[2J\n" + gameMap.InvertY().String())
 		case <-c.Done:
 			return part1, part2
 		}

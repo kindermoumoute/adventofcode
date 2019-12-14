@@ -203,9 +203,9 @@ func (m Map) String() string {
 	grad := 0
 	for j := topLeft.Y(); j >= botRight.Y(); j-- {
 		if grad%5 == 0 {
-			s += fmt.Sprintf("%d\t┤", j)
+			s += fmt.Sprintf("%d\t ┤", j)
 		} else {
-			s += "\t│"
+			s += "\t │"
 		}
 		for i := topLeft.X(); i <= botRight.X(); i++ {
 			v, exist := m[NewVector(i, j)]
@@ -223,7 +223,7 @@ func (m Map) String() string {
 
 func lineHeaderString(leftX, rightX int) string {
 	header1 := "\t  "
-	header2 := "\t┌ ─"
+	header2 := "\t ┌"
 	grad := 0
 	for i := leftX; i <= rightX; i++ {
 		if grad%5 == 0 {
