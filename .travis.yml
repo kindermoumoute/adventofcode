@@ -1,3 +1,18 @@
+dist: xenial
+sudo: false
+addons:
+  apt:
+    packages:
+      - xorg-dev
+      - libx11-dev
+      - libxrandr-dev
+      - libxinerama-dev
+      - libxcursor-dev
+      - libxi-dev
+      - libopenal-dev
+      - libasound2-dev
+      - libgl1-mesa-dev
+
 notifications:
   email:
     on_success: never
