@@ -3,6 +3,8 @@ package main
 import (
 	"strconv"
 
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
+
 	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
@@ -52,5 +54,5 @@ func run(input string) (interface{}, interface{}) {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, true)
+	execute.Run(run, tests, puzzle, true)
 }

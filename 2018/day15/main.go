@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
+
 	"github.com/beefsack/go-astar"
 
 	"github.com/kindermoumoute/adventofcode/pkg"
@@ -295,5 +297,5 @@ func parse(s string) *day15 {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, false)
+	execute.Run(run, tests, puzzle, false)
 }

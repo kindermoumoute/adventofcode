@@ -1,8 +1,10 @@
 package main
 
-import "github.com/kindermoumoute/adventofcode/pkg"
+import (
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
+)
 
-var tests = pkg.TestCases{
+var tests = execute.TestCases{
 	{
 		`position=< 9,  1> velocity=< 0,  2>
 position=< 7,  0> velocity=<-1,  0>

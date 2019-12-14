@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kindermoumoute/adventofcode/pkg"
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
 )
 
 // returns part1 and part2
@@ -63,5 +63,5 @@ func parse(s string) map[complex128]map[float64][]float64 {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, false)
+	execute.Run(run, tests, puzzle, false)
 }

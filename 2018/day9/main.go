@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strconv"
 
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
+
 	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
@@ -66,5 +68,5 @@ func parse(s string) (int, int) {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, true)
+	execute.Run(run, tests, puzzle, true)
 }

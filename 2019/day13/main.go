@@ -1,11 +1,10 @@
 package main
 
 import (
-	"github.com/kindermoumoute/adventofcode/pkg/twod"
-
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
 	"github.com/kindermoumoute/adventofcode/pkg/intcode"
-
-	"github.com/kindermoumoute/adventofcode/pkg"
+	"github.com/kindermoumoute/adventofcode/pkg/twod"
+	"golang.org/x/image/colornames"
 )
 
 const (
@@ -26,6 +25,7 @@ var tiles = map[int]string{
 
 // returns part1 and part2
 func run(input string) (interface{}, interface{}) {
+
 	c := intcode.New(input, 0)
 	c.Output.C = make(chan int)
 	c.Done = make(chan bool)
@@ -56,11 +56,13 @@ func run(input string) (interface{}, interface{}) {
 			}
 
 		case <-c.Input.C: // input request
-			//timer := time.After(time.Millisecond * 50)
 			c.Input.C <- strat(gameMap.Find(bar)[0], gameMap.Find(ball)[0])
-			//<-timer
-
-			//fmt.Printf("\033[2J\n" + gameMap.InvertY().String())
+			gameMap.Render(twod.RenderingMap{
+				wall:  colornames.Brown,
+				brick: colornames.Purple,
+				bar:   colornames.Black,
+				ball:  colornames.Red,
+			})
 		case <-c.Done:
 			return part1, part2
 		}
@@ -77,5 +79,5 @@ func strat(you, ball twod.Vector) int {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, true)
+	execute.RunWithPixel(run, tests, puzzle, true)
 }

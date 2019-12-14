@@ -3,13 +3,13 @@ package main
 import (
 	"strconv"
 
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
+
 	"github.com/kindermoumoute/adventofcode/pkg/twod"
 
 	"github.com/kindermoumoute/adventofcode/pkg/font"
 
 	"github.com/kindermoumoute/adventofcode/pkg/intcode"
-
-	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
 // returns part1 and part2
@@ -65,5 +65,5 @@ func drawMap(program string, firstInput int) twod.Map {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, true)
+	execute.Run(run, tests, puzzle, true)
 }

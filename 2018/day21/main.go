@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
+
 	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
@@ -116,7 +118,7 @@ func parse(s string) ([]Instruction, int) {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, true)
+	execute.Run(run, tests, puzzle, true)
 }
 
 func (r *Registers) setr(a, b, c int) {

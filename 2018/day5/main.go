@@ -3,7 +3,7 @@ package main
 import (
 	"strconv"
 
-	"github.com/kindermoumoute/adventofcode/pkg"
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
 )
 
 // returns part1 and part2
@@ -48,5 +48,5 @@ func removeLetterFromPolymer(p Polymer, letter byte) Polymer {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, false)
+	execute.Run(run, tests, puzzle, false)
 }

@@ -3,9 +3,9 @@ package main
 import (
 	"strconv"
 
-	"github.com/kindermoumoute/adventofcode/pkg/font"
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
 
-	"github.com/kindermoumoute/adventofcode/pkg"
+	"github.com/kindermoumoute/adventofcode/pkg/font"
 )
 
 // returns part1 and part2
@@ -56,5 +56,5 @@ func parse(s string) [][]byte {
 }
 
 func main() {
-	pkg.Execute(run, tests, puzzle, true)
+	execute.Run(run, tests, puzzle, true)
 }

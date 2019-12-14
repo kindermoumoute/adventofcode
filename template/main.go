@@ -3,6 +3,8 @@ package main
 import (
 	"strings"
 
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
+
 	"github.com/kindermoumoute/adventofcode/pkg"
 )
 
@@ -24,5 +26,5 @@ func parse(s string) {
 }
 
 func main() {
-	pkg.Execute(run, nil, puzzle, true)
+	execute.Run(run, nil, puzzle, true)
 }

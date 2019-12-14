@@ -1,8 +1,10 @@
 package main
 
-import "github.com/kindermoumoute/adventofcode/pkg"
+import (
+	"github.com/kindermoumoute/adventofcode/pkg/execute"
+)
 
-var tests = pkg.TestCases{
+var tests = execute.TestCases{
 	{
 		`[1518-11-01 00:00] Guard #10 begins shift
 [1518-11-01 00:05] falls asleep
