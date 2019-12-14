@@ -2,6 +2,7 @@ package execute
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/faiface/pixel/pixelgl"
@@ -22,6 +23,10 @@ func Run(run func(string) (interface{}, interface{}), tests TestCases, puzzle st
 }
 
 func RunWithPixel(run func(string) (interface{}, interface{}), tests TestCases, puzzle string, verbose bool) {
+	if os.Getenv("CI") == "true" {
+		Run(run, tests, puzzle, verbose)
+		return
+	}
 	twod.RenderingEnabled = true
 	pixelgl.Run(func() {
 		Run(run, tests, puzzle, verbose)
