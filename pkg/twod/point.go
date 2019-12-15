@@ -2,6 +2,8 @@ package twod
 
 import (
 	"math"
+
+	"github.com/beefsack/go-astar"
 )
 
 const (
@@ -11,17 +13,24 @@ const (
 	RIGHT = Vector(1)
 )
 
-var DirectionNames = map[Vector]string{
-	UP:    "up",
-	LEFT:  "left",
-	DOWN:  "down",
-	RIGHT: "right",
-}
+var (
+	DirectionNames = map[Vector]string{
+		UP:    "up",
+		LEFT:  "left",
+		DOWN:  "down",
+		RIGHT: "right",
+	}
+	AllDirections = []Vector{DOWN, RIGHT, LEFT, UP}
+)
 
 type P struct {
 	Pos   Vector
 	Speed Vector
 	Steps int
+
+	// emptyPoints and target are used for astar algorithm
+	emptyPoints   Map
+	exitCondition func(currentPoint *P, neighbors []astar.Pather) []astar.Pather
 }
 
 func NewPoint(position Vector, direction Vector) *P {

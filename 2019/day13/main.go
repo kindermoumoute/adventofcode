@@ -1,6 +1,8 @@
 package main
 
 import (
+	"image/color"
+
 	"github.com/kindermoumoute/adventofcode/pkg/execute"
 	"github.com/kindermoumoute/adventofcode/pkg/intcode"
 	"github.com/kindermoumoute/adventofcode/pkg/twod"
@@ -33,6 +35,12 @@ func run(input string) (interface{}, interface{}) {
 	c.RunBackground()
 
 	gameMap := make(twod.Map)
+	twod.RenderingMap = map[interface{}]color.Color{
+		wall:  colornames.Brown,
+		brick: colornames.Purple,
+		bar:   colornames.Black,
+		ball:  colornames.Red,
+	}
 
 	part1, part2 := 0, 0
 	for {
@@ -57,12 +65,7 @@ func run(input string) (interface{}, interface{}) {
 
 		case <-c.Input.C: // input request
 			c.Input.C <- strat(gameMap.Find(bar)[0], gameMap.Find(ball)[0])
-			gameMap.Render(twod.RenderingMap{
-				wall:  colornames.Brown,
-				brick: colornames.Purple,
-				bar:   colornames.Black,
-				ball:  colornames.Red,
-			})
+			gameMap.Render()
 		case <-c.Done:
 			return part1, part2
 		}
