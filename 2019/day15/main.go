@@ -31,7 +31,6 @@ func run(input string) (interface{}, interface{}) {
 	action := map[twod.Vector]int{0: 0, twod.UP: 1, twod.DOWN: 2, twod.LEFT: 3, twod.RIGHT: 4}
 
 	// graphic rendering config
-	twod.SetFPS(0)
 	twod.RenderingMap = map[interface{}]color.Color{
 		wall:      colornames.Black,
 		empty:     colornames.Yellow,
