@@ -210,7 +210,7 @@ func (m Map) String() string {
 		for i := topLeft.X(); i <= botRight.X(); i++ {
 			v, exist := m[NewVector(i, j)]
 			if exist {
-				s += fmt.Sprint(v)
+				s += printValue(v)
 			} else {
 				s += " "
 			}
@@ -219,6 +219,14 @@ func (m Map) String() string {
 		grad++
 	}
 	return s
+}
+
+func printValue(v interface{}) string {
+	ascii, isASCII := v.(int32)
+	if isASCII {
+		return fmt.Sprintf("%c", ascii)
+	}
+	return fmt.Sprint(v)
 }
 
 func lineHeaderString(leftX, rightX int) string {
