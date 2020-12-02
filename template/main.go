@@ -20,26 +20,6 @@ func run(input string) (interface{}, interface{}) {
 	//twod.NewPoint()
 	////
 
-	//// intcode minimal code
-	//
-	//c := intcode.New(input, 0)
-	//c.Output.C = make(chan int)
-	//c.Done = make(chan bool)
-	//c.RunBackground()
-	//dance:
-	//	for {
-	//		select {
-	//		case output := <-c.Output.C:
-	//			c.Output.C <- 0 // ack
-	//			// use output
-	//		case <-c.Input.C: // input request
-	//			c.Input.C <- 42 // send input
-	//		case <-c.Done:
-	//			break dance
-	//		}
-	//	}
-	////
-
 	return part1, part2
 }
 
