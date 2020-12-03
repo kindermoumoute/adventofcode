@@ -51,6 +51,18 @@ func Sum(values ...int) int {
 	return sum
 }
 
+func Multiply(values ...int) int {
+	if len(values) == 0 {
+		panic("no value in sum function")
+	}
+
+	sum := 1
+	for _, value := range values {
+		sum *= value
+	}
+	return sum
+}
+
 func GCD(a, b int) int {
 	if b == 0 {
 		return a

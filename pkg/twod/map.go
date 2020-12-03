@@ -192,6 +192,16 @@ func (m Map) FindBottomRight() Vector {
 	return NewVector(maxX, minY)
 }
 
+// Width returns width of the map.
+func (m Map) Width() int {
+	return m.FindBottomRight().X() - m.FindBottomLeft().X() + 1
+}
+
+// Height returns height of the map.
+func (m Map) Height() int {
+	return m.FindBottomRight().Y() - m.FindTopRight().Y() + 1
+}
+
 func (m Map) String() string {
 	topLeft := m.FindTopLeft()
 	botRight := m.FindBottomRight()
