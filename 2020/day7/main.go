@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"strconv"
+	"regexp"
 	"strings"
 
+	"github.com/kindermoumoute/adventofcode/pkg"
 	"github.com/kindermoumoute/adventofcode/pkg/execute"
 )
 
@@ -15,7 +15,7 @@ func run(input string) (interface{}, interface{}) {
 	part1, part2 := 0, 0
 	for _, b := range bags {
 		if b.name == "shiny gold" {
-			part2 = b.countBags() - 1
+			part2 = b.countBags() - 1 // remove shiny gold from the count
 		}
 		if b.contain("shiny gold") {
 			part1++
@@ -32,16 +32,8 @@ type bag struct {
 }
 
 func (b *bag) contain(name string) bool {
-	if b == nil {
-		return false
-	}
-	for childName := range b.children {
-		if childName == name {
-			return true
-		}
-	}
-	for _, child := range b.children {
-		if child.contain(name) {
+	for childName, child := range b.children {
+		if childName == name || child.contain(name) {
 			return true
 		}
 	}
@@ -50,9 +42,6 @@ func (b *bag) contain(name string) bool {
 
 func (b *bag) countBags() int {
 	currentCount := 1
-	if b == nil {
-		return currentCount
-	}
 	for k, count := range b.childrenCount {
 		currentCount += count * b.children[k].countBags()
 	}
@@ -62,31 +51,23 @@ func (b *bag) countBags() int {
 func parse(s string) []*bag {
 	bags := []*bag(nil)
 	index := make(map[string]*bag)
-	lines := strings.Split(s, "\n")
-	for _, line := range lines {
-		tmp := strings.Split(line, " bags contain ")
+
+	for _, line := range strings.Split(s, "\n") {
+		name := regexp.MustCompile(`(.+) bags contain`).FindAllStringSubmatch(line, -1)[0][1]
 		b := &bag{
-			name:          tmp[0],
+			name:          name,
 			children:      make(map[string]*bag),
 			childrenCount: make(map[string]int),
 		}
 		bags = append(bags, b)
-		if _, exist := index[b.name]; exist {
-			panic(fmt.Errorf("doublon %s", b.name))
-		}
 		index[b.name] = b
-		for _, child := range strings.Split(strings.TrimRight(tmp[1], "."), ", ") {
-			tmp3 := strings.Split(child, " bag")
-			child = tmp3[0]
-			tmp2 := strings.Split(child, " ")
-			childName := strings.Join(tmp2[1:], " ")
-			childCount, err := strconv.Atoi(tmp2[0])
-			if err != nil {
-				childCount = 0
-			}
+
+		for _, matches := range regexp.MustCompile(`(\d+) (.+?) bags?`).FindAllStringSubmatch(line, -1) {
+			childName := matches[2]
+			childCount := pkg.MustAtoi(matches[1])
+
 			b.children[childName] = nil
 			b.childrenCount[childName] = childCount
-
 		}
 	}
 	for _, b := range bags {
