@@ -9,7 +9,7 @@ import (
 
 // returns part1 and part2
 func run(input string) (interface{}, interface{}) {
-	m, _, _ := parse(input)
+	m := parse(input)
 	part1 := 0
 	for i := 0; m[i].usage < 1; i++ {
 		switch m[i].verb {
@@ -24,7 +24,7 @@ func run(input string) (interface{}, interface{}) {
 	part2 := 0
 
 	for j := 0; j < len(m); j++ {
-		m, _, _ = parse(input)
+		m = parse(input)
 		if m[j].verb == "jmp" {
 			m[j].verb = "nop"
 		} else if m[j].verb == "nop" {
@@ -65,10 +65,9 @@ type ins struct {
 	jmpCount int
 }
 
-func parse(s string) (map[int]*ins, int, int) {
+func parse(s string) map[int]*ins {
 	lines := strings.Split(s, "\n")
 	m := make(map[int]*ins)
-	nopCount, jmpCount := 0, 0
 	for i, line := range lines {
 		line = strings.ReplaceAll(line, "+", "")
 		verb, value := "", 0
@@ -77,16 +76,8 @@ func parse(s string) (map[int]*ins, int, int) {
 			verb:  verb,
 			value: value,
 		}
-		if verb == "nop" {
-			m[i].nopCount = nopCount
-			nopCount++
-		}
-		if verb == "jmp" {
-			m[i].jmpCount = jmpCount
-			jmpCount++
-		}
 	}
-	return m, nopCount, jmpCount
+	return m
 }
 
 func main() {
