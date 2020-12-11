@@ -8,7 +8,7 @@ import (
 // returns part1 and part2
 func run(input string) (interface{}, interface{}) {
 	m := twod.NewMapFromInput(input)
-	part1 := solve(m, 4, occupied)
+	part1 := solve(m.Clone(), 4, occupied)
 	part2 := solve(m, 5, occupied2)
 
 	return part1, part2
@@ -16,21 +16,18 @@ func run(input string) (interface{}, interface{}) {
 
 func solve(m twod.Map, seatTolerance int, occupiedFunc func(m twod.Map, v twod.Vector) int) int {
 	for {
-		m2 := m.Clone()
+		changed := twod.Map{}
 		occupiedCount := 0
-		changes := 0
 		for v, char := range m {
 			switch char {
 			case 'L':
 				if occupiedFunc(m, v) > 0 {
 					continue
 				}
-				m2[v] = '#'
-				changes++
+				changed[v] = '#'
 			case '#':
 				if occupiedFunc(m, v) >= seatTolerance {
-					changes++
-					m2[v] = 'L'
+					changed[v] = 'L'
 				} else {
 					occupiedCount++
 				}
@@ -38,10 +35,12 @@ func solve(m twod.Map, seatTolerance int, occupiedFunc func(m twod.Map, v twod.V
 
 		}
 
-		if changes == 0 {
+		if len(changed) == 0 {
 			return occupiedCount
 		}
-		m = m2
+		for k, v := range changed {
+			m[k] = v
+		}
 	}
 }
 
