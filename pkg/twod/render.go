@@ -8,11 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/faiface/pixel/pixelgl"
-
-	"golang.org/x/image/colornames"
-
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/pixelgl"
+	"golang.org/x/image/colornames"
 )
 
 var (

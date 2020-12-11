@@ -59,7 +59,7 @@ func (p *P) ShortestPathToPos(pos Vector, emptyPoints Map) (path []*P, distance 
 func (p *P) PathNeighbors() []astar.Pather {
 	p.emptyPoints.Render()
 	adjs := make([]astar.Pather, 0, 4)
-	for _, dir := range AllDirections {
+	for _, dir := range FourDirections {
 
 		// move the point to the adjacent position
 		p.Speed = dir

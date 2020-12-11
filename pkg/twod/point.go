@@ -11,6 +11,11 @@ const (
 	LEFT  = Vector(-1)
 	DOWN  = Vector(-1i)
 	RIGHT = Vector(1)
+
+	UPRIGHT   = UP + RIGHT
+	UPLEFT    = UP + LEFT
+	DOWNRIGHT = DOWN + RIGHT
+	DOWNLEFT  = DOWN + LEFT
 )
 
 var (
@@ -20,7 +25,8 @@ var (
 		DOWN:  "down",
 		RIGHT: "right",
 	}
-	AllDirections = []Vector{DOWN, RIGHT, LEFT, UP}
+	FourDirections = []Vector{DOWN, RIGHT, LEFT, UP}
+	AllDirections  = []Vector{DOWN, RIGHT, LEFT, UP, UPRIGHT, UPLEFT, DOWNRIGHT, DOWNLEFT}
 )
 
 type P struct {
