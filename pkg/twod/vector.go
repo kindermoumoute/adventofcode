@@ -50,6 +50,9 @@ func (v Vector) EuclideanDistFromOrigin() float64 {
 	return v.EuclideanDistFrom(0)
 }
 
+func (v Vector) RotateDegree(degrees int) Vector {
+	return v.Rotate(float64(degrees) * 2 * math.Pi / 360)
+}
 func (v Vector) Rotate(angle float64) Vector {
 	radius, currentAngle := cmplx.Polar(v.C())
 	return roundComplex(cmplx.Rect(radius, currentAngle+angle))

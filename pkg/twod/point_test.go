@@ -14,6 +14,7 @@ func TestPoint(t *testing.T) {
 	p.MoveRight(2)
 	assert.Equal(t, 2, p.Pos.X())
 	assert.Equal(t, 1, p.Pos.Y())
+	p.Speed = p.Speed.RotateDegree(270)
 	p.Move(-4)
 	assert.Equal(t, -2, p.Pos.X())
 	assert.Equal(t, 1, p.Pos.Y())

@@ -48,23 +48,31 @@ func NewPoint(position Vector, direction Vector) *P {
 }
 
 func (p *P) MoveLeft(steps int) {
+	speedOrig := p.Speed
 	p.Speed = LEFT
 	p.Move(steps)
+	p.Speed = speedOrig
 }
 
 func (p *P) MoveRight(steps int) {
+	speedOrig := p.Speed
 	p.Speed = RIGHT
 	p.Move(steps)
+	p.Speed = speedOrig
 }
 
 func (p *P) MoveUp(steps int) {
+	speedOrig := p.Speed
 	p.Speed = UP
 	p.Move(steps)
+	p.Speed = speedOrig
 }
 
 func (p *P) MoveDown(steps int) {
+	speedOrig := p.Speed
 	p.Speed = DOWN
 	p.Move(steps)
+	p.Speed = speedOrig
 }
 
 func (p *P) Move(steps int) {
