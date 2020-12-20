@@ -23,9 +23,28 @@ func NewMapFromInput(input string) Map {
 	return m
 }
 
+func (m Map) Equal(m2 Map) bool {
+	matches := 0
+	for k, v1 := range m {
+		v2, exist := m2[k]
+		if exist && v2 == v1 {
+			matches++
+		}
+	}
+	return matches == len(m)
+}
+
 func (m Map) Clone() Map {
 	clone := make(Map)
 	for k, v := range m {
+		clone[k] = v
+	}
+	return clone
+}
+
+func (m Map) Merge(m2 Map) Map {
+	clone := m.Clone()
+	for k, v := range m2 {
 		clone[k] = v
 	}
 	return clone
