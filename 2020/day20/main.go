@@ -22,7 +22,7 @@ func run(input string) (interface{}, interface{}) {
 	part1, part2 := 0, 0
 buildingMap:
 	for len(bordersPerTileID) > 0 {
-		removeBorders(seaMap).Render()
+		//removeBorders(seaMap).Render()
 		actualBordersPerType := findBorders(seaMap)
 		for _, direction := range twod.FourDirections {
 			for id, potentialBordersPerDirection := range bordersPerTileID {
@@ -51,22 +51,23 @@ buildingMap:
  #  #  #  #  #  #   `).Filter('#').SetPositive().Translate(-1i)
 	seaMap = removeBorders(seaMap.Filter('#'))
 	for i := 0; i < 8; i++ {
-		seaMap.Render()
+		//seaMap.Render()
 		monsters := make(twod.Map)
 	lookingForSeaMonster:
 		for k := range seaMap {
 			potentialMonster := make(twod.Map)
+			//tmp2Render := seaMap.Merge(monsters)
 			for k2 := range seaMonster {
 				_, exist := seaMap[k+k2]
 				if !exist {
 					continue lookingForSeaMonster
 				}
 				potentialMonster[k+k2] = 'O'
+				//if len(potentialMonster) > 2 {
+				//	tmp2Render.Merge(potentialMonster).Render()
+				//}
 			}
 			monsters = monsters.Merge(potentialMonster)
-			if len(potentialMonster) > 0 {
-				seaMap.Merge(monsters).Render()
-			}
 		}
 		if len(monsters) == 0 {
 			seaMap = seaMap.RotateRight() // try every rotation
@@ -85,8 +86,7 @@ buildingMap:
 func removeBorders(m twod.Map) twod.Map {
 	cleanedMap := make(twod.Map)
 	for pos, value := range m.SetPositive() {
-		x := pos.X()
-		y := pos.Y()
+		x, y := pos.X(), pos.Y()
 		if x%10 == 0 || x%10 == 9 || y%10 == 0 || y%10 == 9 {
 			continue
 		}
@@ -106,34 +106,25 @@ type Border struct {
 
 // findBorders will return all borders sorted by side (UP,DOWN,LEFT,RIGHT).
 func findBorders(m twod.Map) map[twod.Vector][]*Border {
-	p := twod.NewPoint(m.FindBottomLeft(), twod.UP)
 	// find first pixel
-	for {
-		_, exist := m[p.Pos]
-		if exist {
-			break
-		}
+	p := twod.NewPoint(m.FindBottomLeft(), twod.UP)
+	for _, exist := m[p.Pos]; !exist; _, exist = m[p.Pos] {
 		p.Move(1)
 	}
 
 	// Follow borders
 	seen := make(map[twod.Vector]struct{})
 	borders := make(map[twod.Vector][]*Border)
-	for {
-		if _, exist := seen[p.Pos]; exist {
-			break
-		}
+	for exist := false; !exist; _, exist = seen[p.Pos] {
 		seen[p.Pos] = struct{}{}
 
-		b := &Border{
-			Positions: make(twod.Map),
-		}
+		b := &Border{Positions: make(twod.Map)}
 		for i := 0; i < 10; i++ {
 			b.Positions[p.Pos] = m[p.Pos]
 			p.Move(1)
 		}
-		borderType := p.Speed.RotateDegree(90)
 
+		borderType := p.Speed.RotateDegree(90)
 		switch borderType {
 		case twod.LEFT:
 			b.BottomLeft = b.Positions.FindBottomLeft() - 10
@@ -146,7 +137,7 @@ func findBorders(m twod.Map) map[twod.Vector][]*Border {
 		}
 		b.Positions = b.Positions.SetPositive()
 
-		_, exist := borders[borderType]
+		_, exist = borders[borderType]
 		if !exist {
 			borders[borderType] = []*Border(nil)
 		}
@@ -155,10 +146,10 @@ func findBorders(m twod.Map) map[twod.Vector][]*Border {
 		// Next movement
 		p.TurnLeft()
 		p.Move(1)
-		if _, exist := m[p.Pos]; !exist {
+		if _, exist = m[p.Pos]; !exist {
 			p.Move(-1)
 			p.TurnRight()
-			if _, exist := m[p.Pos]; !exist {
+			if _, exist = m[p.Pos]; !exist {
 				p.Move(-1)
 				p.TurnRight()
 			}
