@@ -15,9 +15,9 @@ import (
 func run(input string) (interface{}, interface{}) {
 	twod.RenderingMap = map[interface{}]color.Color{
 		'#': colornames.Black,
-		'.': colornames.Yellow,
+		'O': colornames.Red,
 	}
-	twod.SetFPS(60)
+	twod.SetFPS(10)
 	tiles := parse(input)
 
 	part1, part2 := 0, 0
@@ -147,14 +147,10 @@ func run(input string) (interface{}, interface{}) {
 	m := tiles[arbitraryTile]
 dance:
 	for len(bordersPerTileID) > 0 {
-		m.Render()
+		removeCouronne(m).Render()
 		actualBordersPerType := findBorders(m)
-
 		for _, direction := range twod.FourDirections {
 			for id, potentialBordersPerDirection := range bordersPerTileID {
-				if direction == twod.UP {
-					m.Merge(tiles[id].Translate(m.FindBottomRight() + 15)).Render()
-				}
 				for _, potentialBorder := range potentialBordersPerDirection[direction] {
 					for _, actualBorder := range actualBordersPerType[direction.RotateDegree(180)] {
 						if actualBorder.Positions.Equal(potentialBorder.Positions) {
@@ -169,14 +165,15 @@ dance:
 			}
 		}
 	}
+
 	seaMonster := twod.NewMapFromInput(`                  # 
 #    ##    ##    ###
  #  #  #  #  #  #   `).Filter('#').SetPositive().Translate(-1i)
 	fmt.Println(seaMonster)
-	m = m.Filter('#')
+	m = removeCouronne(m.Filter('#'))
+	fmt.Println(m)
 	for i := 0; i < 8; i++ {
-		//m.Render()
-		//fmt.Println(m)
+		m.Render()
 		monsters := make(twod.Map)
 	dance2:
 		for k := range m {
@@ -184,16 +181,15 @@ dance:
 			for k2 := range seaMonster {
 				_, exist := m[k+k2]
 				if !exist {
-					if len(potentialMonster) > 2 {
-						fmt.Println(i, k, len(potentialMonster))
-						fmt.Println(potentialMonster)
-					}
 					continue dance2
 				}
 				//potentialMonster.Render()
-				potentialMonster[k+k2] = '#'
+				potentialMonster[k+k2] = 'O'
 			}
 			monsters = monsters.Merge(potentialMonster)
+			if len(potentialMonster) > 0 {
+				m.Merge(monsters).Render()
+			}
 		}
 		if len(monsters) == 0 {
 			m = m.RotateRight() // try every rotation
@@ -207,6 +203,20 @@ dance:
 	}
 
 	return part1, part2
+}
+
+func removeCouronne(m twod.Map) twod.Map {
+	cleanedMap := make(twod.Map)
+	for pos, value := range m.SetPositive() {
+		x := pos.X()
+		y := pos.Y()
+		if x%10 == 0 || x%10 == 9 || y%10 == 0 || y%10 == 9 {
+			continue
+		}
+		newPos := twod.NewVector(x-x/10*2-1, y-y/10*2-1)
+		cleanedMap[newPos] = value
+	}
+	return cleanedMap
 }
 
 type Border struct {
@@ -320,5 +330,5 @@ func parse(s string) map[int]twod.Map {
 }
 
 func main() {
-	execute.RunWithPixel(run, tests, puzzle, true)
+	execute.RunWithPixel(run, nil, puzzle, true)
 }
