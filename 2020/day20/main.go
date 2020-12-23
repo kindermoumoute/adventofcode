@@ -46,26 +46,12 @@ buildingMap:
 	part1 *= tileMap[tileMap.FindBottomRight()].(int)
 	part1 *= tileMap[tileMap.FindBottomLeft()].(int)
 
+	seaMap = removeBorders(seaMap.Filter('#'))
 	seaMonster := twod.NewMapFromInput(`                  # 
 #    ##    ##    ###
  #  #  #  #  #  #   `).Filter('#')
-	seaMap = removeBorders(seaMap.Filter('#'))
-	for i := 0; i < 8; i++ {
-		//seaMap.Render()
-		matches := seaMap.FindPattern(seaMonster, false)
-		if len(matches) != 0 {
-			part2 = len(seaMap)
-			for _, pattern := range matches {
-				part2 -= len(pattern)
-			}
-			break
-		}
-
-		seaMap = seaMap.RotateRight() // try every rotation
-		if i%4 == 3 {
-			seaMap = seaMap.InvertY() // try every inversion
-		}
-	}
+	matches := seaMap.FindPattern(seaMonster, false)
+	part2 = len(seaMap) - len(matches)*len(seaMonster)
 
 	return part1, part2
 }

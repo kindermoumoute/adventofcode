@@ -139,23 +139,37 @@ func (m Map) Find(matches ...interface{}) []Vector {
 	return founds
 }
 
-func (m Map) FindPattern(pattern Map, matchValue bool) []Map {
+// FindPattern looks for a pattern in a map and return a list of pattern start points.
+func (m Map) FindPattern(pattern Map, matchValue bool) []Vector {
 	firstPoint := pattern.FindBottomFirstColumn()
 	if firstPoint != 0 {
 		pattern = pattern.Translate(-firstPoint)
 	}
-	matches := []Map(nil)
+	for i := 0; i < 8; i++ {
+		matches := m.findExactPattern(pattern, matchValue)
+		if len(matches) != 0 {
+			return matches
+		}
+
+		m = m.RotateRight() // try every rotation
+		if i%4 == 3 {
+			m = m.InvertY() // try every inversion
+		}
+	}
+	return nil
+}
+
+func (m Map) findExactPattern(pattern Map, matchValue bool) []Vector {
+	matches := []Vector(nil)
 looking:
 	for k := range m {
-		currentMatch := make(Map)
 		for k2, value2 := range pattern {
 			value, exist := m[k+k2]
 			if !exist || (matchValue && value != value2) {
 				continue looking
 			}
-			currentMatch[k+k2] = value
 		}
-		matches = append(matches, currentMatch)
+		matches = append(matches, k)
 	}
 	return matches
 }
