@@ -139,6 +139,45 @@ func (m Map) Find(matches ...interface{}) []Vector {
 	return founds
 }
 
+func (m Map) FindPattern(pattern Map, matchValue bool) []Map {
+	firstPoint := pattern.FindBottomFirstColumn()
+	if firstPoint != 0 {
+		pattern = pattern.Translate(-firstPoint)
+	}
+	matches := []Map(nil)
+looking:
+	for k := range m {
+		currentMatch := make(Map)
+		for k2, value2 := range pattern {
+			value, exist := m[k+k2]
+			if !exist || (matchValue && value != value2) {
+				continue looking
+			}
+			currentMatch[k+k2] = value
+		}
+		matches = append(matches, currentMatch)
+	}
+	return matches
+}
+
+// FindBottomFirstColumn returns a point that is the most bottom left point of the map.
+// This point exists in the actual map.
+func (m Map) FindBottomFirstColumn() Vector {
+	p := Vector(0)
+	set := false
+	for k := range m {
+		switch {
+		case !set:
+			set = true
+			p = k
+		case k.X() < p.X() ||
+			k.X() == p.X() && k.Y() < p.Y():
+			p = k
+		}
+	}
+	return p
+}
+
 // FindTopLeft returns a point that represent the top left corner of a squared map only composed of the match values.
 // This point might not exist on the actual map.
 func (m Map) FindTopLeft() Vector {

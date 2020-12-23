@@ -48,36 +48,23 @@ buildingMap:
 
 	seaMonster := twod.NewMapFromInput(`                  # 
 #    ##    ##    ###
- #  #  #  #  #  #   `).Filter('#').SetPositive().Translate(-1i)
+ #  #  #  #  #  #   `).Filter('#')
 	seaMap = removeBorders(seaMap.Filter('#'))
 	for i := 0; i < 8; i++ {
 		//seaMap.Render()
-		monsters := make(twod.Map)
-	lookingForSeaMonster:
-		for k := range seaMap {
-			potentialMonster := make(twod.Map)
-			//tmp2Render := seaMap.Merge(monsters)
-			for k2 := range seaMonster {
-				_, exist := seaMap[k+k2]
-				if !exist {
-					continue lookingForSeaMonster
-				}
-				potentialMonster[k+k2] = 'O'
-				//if len(potentialMonster) > 2 {
-				//	tmp2Render.Merge(potentialMonster).Render()
-				//}
+		matches := seaMap.FindPattern(seaMonster, false)
+		if len(matches) != 0 {
+			part2 = len(seaMap)
+			for _, pattern := range matches {
+				part2 -= len(pattern)
 			}
-			monsters = monsters.Merge(potentialMonster)
+			break
 		}
-		if len(monsters) == 0 {
-			seaMap = seaMap.RotateRight() // try every rotation
-			if i%4 == 3 {
-				seaMap = seaMap.InvertY() // try every inversion
-			}
-			continue
+
+		seaMap = seaMap.RotateRight() // try every rotation
+		if i%4 == 3 {
+			seaMap = seaMap.InvertY() // try every inversion
 		}
-		part2 = len(seaMap) - len(monsters)
-		break
 	}
 
 	return part1, part2
