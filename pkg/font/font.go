@@ -132,10 +132,10 @@ func FindWordInMap(screen twod.Map) (Word, error) {
 			return letters, nil
 		}
 		multiErr = multierror.Append(err, multiErr)
-		if i%2 == 0 { // TODO: fix, see day 20 2020
+
+		screen = screen.RotateRight() // try every rotation
+		if i%4 == 3 {
 			screen = screen.InvertY() // try every inversion
-		} else {
-			screen = screen.RotateRight() // try every rotation
 		}
 	}
 	return nil, multiErr
