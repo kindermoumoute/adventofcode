@@ -60,6 +60,16 @@ func (m Map) Filter(matches ...interface{}) Map {
 	return clone
 }
 
+func (m Map) FilterOut(matches ...interface{}) Map {
+	clone := make(Map)
+	for k, v := range m {
+		if !hasMatch(v, matches) {
+			clone[k] = v
+		}
+	}
+	return clone
+}
+
 func (m Map) RotateLeft() Map {
 	clone := make(Map)
 	for k, v := range m {
