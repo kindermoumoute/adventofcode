@@ -6,6 +6,7 @@ require (
 	github.com/beefsack/go-astar v0.0.0-20171024231011-f324bbb0d6f7
 	github.com/faiface/pixel v0.10.1-0.20201122042400-f931f69d6e5e
 	github.com/hashicorp/go-multierror v1.0.0
+	github.com/samber/lo v1.39.0
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff
 )
@@ -20,5 +21,6 @@ require (
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
