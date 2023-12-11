@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 
 	"github.com/kindermoumoute/adventofcode/pkg/execute"
 	"github.com/kindermoumoute/adventofcode/pkg/twod"
+	"golang.org/x/image/colornames"
 )
 
 // returns part1 and part2
@@ -83,32 +85,48 @@ dance:
 		}
 	}
 
+	outsidepoints := make(twod.Map)
 	for pos := range m {
 		if _, exist := distFromStart[pos]; exist {
 			continue
 		}
-		reachRight := true
+		// reachRight := true
 		reachLeft := true
 
 		for y := pos.Y(); y > 0; y-- {
 			newPos := twod.NewVector(pos.X(), y)
 			_, exist := distFromStart[newPos]
 
-			if exist && (m[newPos] == '-' || m[newPos] == 'L' || m[newPos] == 'F') {
-				reachRight = !reachRight
-			}
-			if exist && (m[newPos] == '-' || m[newPos] == '7' || m[newPos] == 'J') {
+			// if exist && (m[newPos] == '-' || m[newPos] == 'L' || m[newPos] == 'F') {
+			// 	reachRight = !reachRight
+			// }
+			if exist && (m[newPos] == '-' || m[newPos] == '7' || m[newPos] == 'J' || m[newPos] == 'L' || m[newPos] == 'F') {
 				reachLeft = !reachLeft
 			}
 		}
-		if !(reachRight || reachLeft) {
+		if !(reachLeft) {
+			outsidepoints[pos] = '.'
 			part2++
 		}
 	}
+
+	// Show nice visualization for fun
+	twod.RenderingMap = map[interface{}]color.Color{
+		'.': colornames.Blue,
+	}
+	for i := 0; i <= part1; i++ {
+		twod.RenderingMap[i] = colornames.Green
+	}
+
+	for vector, i := range outsidepoints {
+		distFromStart[vector] = i
+	}
+	distFromStart.Render()
+	// time.Sleep(time.Minute)
 
 	return part1, part2
 }
 
 func main() {
-	execute.Run(run, tests, puzzle, true)
+	execute.RunWithPixel(run, tests, puzzle, true)
 }
