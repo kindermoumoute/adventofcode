@@ -88,51 +88,33 @@ func move(m twod.Map, movedParts []twod.Vector, dir twod.Vector) twod.Vector {
 	return robot
 }
 
+var otherSide = map[any]twod.Vector{
+	']': twod.LEFT,
+	'[': twod.RIGHT,
+}
+
 func findMovables(m twod.Map, pos, dir twod.Vector) []twod.Vector {
 	tile, exists := m[pos+dir]
 	if !exists {
 		return []twod.Vector{pos}
 	}
-
-	switch tile {
-	case 'O':
-		movedParts := findMovables(m, pos+dir, dir)
-		if len(movedParts) > 0 {
-			return append(movedParts, pos)
-		}
-	case ']':
-		switch dir {
-		case twod.LEFT:
-			movedParts := findMovables(m, pos+dir+twod.LEFT, dir)
-			if len(movedParts) > 0 {
-				return append(movedParts, pos+twod.LEFT, pos)
-			}
-
-		case twod.DOWN, twod.UP:
-			movedPartsLeft := findMovables(m, pos+dir+twod.LEFT, dir)
-			movedPartsRight := findMovables(m, pos+dir, dir)
-			if len(movedPartsLeft) > 0 && len(movedPartsRight) > 0 {
-				return append(append(movedPartsLeft, movedPartsRight...), pos)
-			}
-		}
-	case '[':
-		switch dir {
-		case twod.RIGHT:
-			movedParts := findMovables(m, pos+dir+twod.RIGHT, dir)
-			if len(movedParts) > 0 {
-				return append(movedParts, pos+twod.RIGHT, pos)
-			}
-		case twod.DOWN, twod.UP:
-			movedPartsLeft := findMovables(m, pos+dir, dir)
-			movedPartsRight := findMovables(m, pos+dir+twod.RIGHT, dir)
-			if len(movedPartsLeft) > 0 && len(movedPartsRight) > 0 {
-				return append(append(movedPartsLeft, movedPartsRight...), pos)
-			}
-		}
-	case '#':
+	if tile == '#' {
+		return nil
 	}
 
-	return nil
+	movedParts := findMovables(m, pos+dir, dir)
+	if len(movedParts) == 0 {
+		return nil
+	}
+
+	if otherSideDir := otherSide[tile]; otherSideDir != 0 && (dir == twod.UP || dir == twod.DOWN) {
+		wideParts := findMovables(m, pos+dir+otherSideDir, dir)
+		if len(wideParts) == 0 {
+			return nil
+		}
+		movedParts = append(movedParts, wideParts...)
+	}
+	return append(movedParts, pos)
 }
 
 func main() {
