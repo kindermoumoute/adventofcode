@@ -1,6 +1,8 @@
 module github.com/kindermoumoute/adventofcode
 
-go 1.18
+go 1.22
+
+toolchain go1.23.3
 
 require (
 	github.com/beefsack/go-astar v0.0.0-20171024231011-f324bbb0d6f7
@@ -8,7 +10,7 @@ require (
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/samber/lo v1.39.0
 	github.com/stretchr/testify v1.4.0
-	golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff
+	golang.org/x/image v0.14.0
 )
 
 require (
@@ -21,6 +23,7 @@ require (
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
+	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
+	gonum.org/v1/gonum v0.15.1 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
